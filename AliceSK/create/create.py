@@ -1,4 +1,5 @@
 from __future__ import print_function, unicode_literals
+
 import shutil
 from pathlib import Path
 import click
@@ -24,32 +25,30 @@ class NotEmpty(Validator):
 				cursor_position=len(document.text)
 			)
 
-PYTHON_CLASS = '''import json
-import core.base.Managers as managers
-from core.base.model.Intent import Intent
-from core.base.model.Module import Module
+PYTHON_CLASS = '''from core.base.model.Module import Module
 from core.dialog.model.DialogSession import DialogSession
+from core.util.Decorators import IntentHandler
 class {moduleName}(Module):
 	"""
 	Author: {username}
 	Description: {description}
 	"""
-	def __init__(self):
-		self._SUPPORTED_INTENTS	= [
-		]
-		super().__init__(self._SUPPORTED_INTENTS)
-	def onMessage(self, intent: str, session: DialogSession):
-		sessionId = session.sessionId
-		siteId = session.siteId
-		slots = session.slots'''
+	@IntentHandler('MyIntentName')
+	def testIntent(self, session: DialogSession, **_kwargs):
+		pass
+
+
+	@IntentHandler('MySecondIntentName')
+	def secondTestIntent(self, session: DialogSession, **_kwargs):
+		pass'''
 
 INSTALL_JSON = '''{{
 	"name": "{moduleName}",
-	"version": 0.0.1,
+	"version": "0.0.1",
 	"author": "{username}",
 	"maintainers": [],
 	"desc": "{description}",
-	"aliceMinVersion": 1.0.0,
+	"aliceMinVersion": "1.0.0",
 	"pipRequirements": [{pipRequirements}],
 	"systemRequirements": [{systemRequirements}],
 	"conditions": {{
@@ -130,13 +129,6 @@ wget http://bit.ly/????????? -O ~/ProjectAlice/system/moduleInstallTickets/{modu
 {langs}
 - Pip requirements: N/A
 - System requirements: N/A
-### Configuration
-`foo`:
- - type: `bar`
- - desc: `baz`
-`bar`:
- - type: `baz`
- - desc: `bar`
 '''
 
 WIDGET_CSS = '''.{widgetName} {{
@@ -185,7 +177,7 @@ FIRST_QUESTION = [
 		'name'    : 'moduleName',
 		'message' : 'Please enter the name of the module you are creating',
 		'validate': NotEmpty,
-		'filter'  : lambda val: str(val).title().replace(' ', '')
+		'filter'  : lambda val: ''.join(x.capitalize() for x in val.split(' '))
 	}
 ]
 
@@ -393,7 +385,6 @@ def createWidgets(modulePath, answers):
 		(modulePath / 'widgets' / 'lang' / f'{widget}.lang.json').write_text('{}')
 		(modulePath / 'widgets' / 'templates' / f'{widget}.html').write_text(WIDGET_TEMPLATE.format(widget=widget))
 		(modulePath / 'widgets' / f'{widget}.py').write_text(WIDGET_CLASS.format(widget=widget))
-
 
 
 @click.command()
