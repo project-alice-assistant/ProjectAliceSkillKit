@@ -5,9 +5,21 @@
 	"maintainers": [],
 	"desc": "{description}",
 	"aliceMinVersion": "1.0.0",
-	"pipRequirements": [{pipRequirements}],
-	"systemRequirements": [{systemRequirements}],
+	"pipRequirements": [
+		{%- for pipRequirement in pipRequirements %}
+  		- {{ pipRequirement }}
+		{% endfor -%}
+	],
+	"systemRequirements":  [
+		{%- for systemRequirement in systemRequirements %}
+  		- {{ systemRequirement }}
+		{% endfor -%}
+	],
 	"conditions": {{
-		"lang": [{langs}]
+		"lang": [
+		{%- for lang in langs %}
+  			- {{ lang }}
+		{% endfor -%}
+		]
 	}
 }

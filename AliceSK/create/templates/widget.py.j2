@@ -1,13 +1,7 @@
-<div class="{{widget}}" id="{{widget}}">
-	<div class="widgetIcons">
-		<div class="widgetIcon">
-			<i class="fas fa-calendar-alt"></i>
-		</div>
-		<div class="widgetIcon" id="widgetSettings_{{widget}}">
-			<i class="fas fa-cog"></i>
-		</div>
-	</div>
-	<div>
-		
-	</div>
-</div>
+import sqlite3
+from core.base.model.Widget import Widget
+class {{ widget }}(Widget):
+	SIZE = 'w_small'
+	OPTIONS = dict()
+	def __init__(self, data: sqlite3.Row):
+		super().__init__(data)
