@@ -26,7 +26,8 @@ setup(
 		'unidecode',
 		'requests',
 		'PyInquirer',
-		'prompt_toolkit==1.0.14'
+		'prompt_toolkit==1.0.14',
+		'jinja2'
 	],
 	classifiers=[
         "Development Status :: 3 - Alpha",

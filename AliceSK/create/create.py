@@ -5,6 +5,14 @@ from pathlib import Path
 import click
 
 from PyInquirer import style_from_dict, Token, prompt, Validator, ValidationError
+import jinja2
+
+
+def renderTemplate(templateFile: str, **kwargs) -> str:
+	templateLoader = jinja2.FileSystemLoader(searchpath='./templates/')
+	templateEnv = jinja2.Environment(loader=templateLoader, autoescape=True)
+	template = templateEnv.get_template(templateFile)
+	return template.render(**kwargs)
 
 
 STYLE = style_from_dict({
@@ -394,6 +402,9 @@ def create():
 	"""
 
 	print('\nHey welcome in this basic module creation tool!')
+
+	print(renderTemplate('widget.js.j2'))
+	return
 	answers = prompt(FIRST_QUESTION, style=STYLE)
 
 	modulePath = Path.home() / 'ProjectAliceModuler' / answers['username'] / answers['moduleName']

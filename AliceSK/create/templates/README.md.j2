@@ -1,0 +1,22 @@
+# {{ moduleName }}
+### Download
+##### > WGET method
+```bash
+wget http://bit.ly/????????? -O ~/ProjectAlice/system/moduleInstallTickets/{{ moduleName }}.install
+```
+##### > Alice CLI method
+```bash
+./alice add module {{ username }} {{ moduleName }}
+```
+### Description
+{{description}}
+- Version: 0.0.1
+- Author: {username}
+- Maintainers: N/A
+- Alice minimum version: 1.0.0
+- Conditions:
+{% for lang in langs %}
+  - {{ lang }}
+{% endfor %}
+- Pip requirements: N/A
+- System requirements: N/A
