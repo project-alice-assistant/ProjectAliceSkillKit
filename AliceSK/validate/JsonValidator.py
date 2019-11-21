@@ -4,10 +4,6 @@ import click
 from AliceSK.validate.src.Validator import Validator
 from AliceSK.util.Helpers import OptionEatAll
 
-#@click.group()
-#def validate():
-#	"""List alice relevant data e.g. modules in the store"""
-#	pass
 
 @click.command()
 @click.option('--paths', cls=OptionEatAll, required=True, help='module paths to test')
@@ -15,8 +11,7 @@ from AliceSK.util.Helpers import OptionEatAll
 @click.option('--token', help='github token')
 def validate(paths: list, verbose: int, token: str):
 	"""
-	This is the Command Line Interface of the JsonValidator for all Modules
-	of Project Alice. Currently the following commands are supported.
+	Validate Modules
 	"""
 	username = 'ProjectAlice'
 	if not token:

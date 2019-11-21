@@ -24,7 +24,9 @@ setup(
 		'snips_nlu_parsers>=0.3.0',
 		'click',
 		'unidecode',
-		'requests'
+		'requests',
+		'PyInquirer',
+		'prompt_toolkit==1.0.14'
 	],
 	classifiers=[
         "Development Status :: 3 - Alpha",
