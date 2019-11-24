@@ -144,6 +144,17 @@ class Moduler:
 			sysreqs.append(subAnswers['sysreq'])
 
 		print('Creating install file')
+		langs = ','.join([f'\n\t\t\t"{lang}"' for lang in self._general['langs']])
+		if langs:
+			langs += '\n\t\t'
+
+		pipRequirements = ','.join([f'\n\t\t"{req}"' for req in reqs])
+		if pipRequirements:
+			pipRequirements += '\n\t'
+
+		systemRequirements = ','.join([f'\n\t\t"{req}"' for req in sysreqs])
+		if systemRequirements:
+			systemRequirements += '\n\t'
 
 		self.createTemplateFile(f"{self._general['moduleName']}.install", 'install.j2',
 			moduleName=self._general['moduleName'],
@@ -175,6 +186,9 @@ class Moduler:
 
 	def createReadme(self):
 		print('Creating readme file')
+		langs = ','.join([f'\n\t\t\t"{lang}"' for lang in self._general['langs']])
+		if langs:
+			langs += '\n\t\t'
 		self.createTemplateFile('README.md', 'README.md.j2',
 			moduleName=self._general['moduleName'],
 			description=self._general['description'],
@@ -230,9 +244,9 @@ class Moduler:
 			widget = str(widget).title().replace(' ', '')
 			self.createTemplateFile(f'widgets/css/{widget}.css', 'widget.css.j2', widgetName=widget)
 			self.createTemplateFile(f'widgets/js/{widget}.js', 'widget.js.j2')
-			#(modulePath / 'widgets' / 'lang' / f'{widget}.lang.json').write_text('{}')
 			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widget.html.j2', widget=widget)
 			self.createTemplateFile(f'widgets/{widget}.py', 'widget.py.j2', widget=widget)
+			(self._modulePath / f'widgets/lang/{widget}.lang.json').write_text('{}')
 
 
 STYLE = style_from_dict({

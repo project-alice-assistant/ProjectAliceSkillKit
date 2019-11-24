@@ -1,25 +1,22 @@
 {
-	"name": "{moduleName}",
+	"name": "{{ moduleName }}",
 	"version": "0.0.1",
-	"author": "{username}",
+	"author": "{{ username }}",
 	"maintainers": [],
-	"desc": "{description}",
+	"desc": "{{ description }}",
 	"aliceMinVersion": "1.0.0",
 	"pipRequirements": [
-		{%- for pipRequirement in pipRequirements %}
-  		- {{ pipRequirement }}
-		{% endfor -%}
-	],
+	{%- for pipRequirement in pipRequirements %}
+		"{{ pipRequirement }}"{{ "," if not loop.last -}}{{ "\n	" if loop.last }}
+	{%- endfor %}],
 	"systemRequirements":  [
-		{%- for systemRequirement in systemRequirements %}
-  		- {{ systemRequirement }}
-		{% endfor -%}
-	],
-	"conditions": {{
+	{%- for systemRequirement in systemRequirements %}
+		"{{ systemRequirement }}"{{ "," if not loop.last -}}{{ "\n	" if loop.last }}
+	{%- endfor %}],
+	"conditions": {
 		"lang": [
 		{%- for lang in langs %}
-  			- {{ lang }}
-		{% endfor -%}
-		]
+			"{{ lang }}"{{ "," if not loop.last -}}{{ "\n		" if loop.last }}
+		{%- endfor %}]
 	}
 }
