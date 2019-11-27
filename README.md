@@ -10,6 +10,14 @@ The Alice Skill Kit is a tool that helps creating Modules for Alice.
 ```bash
 pip3 install alice-sk
 ```
+The Skill Kit supports tab completion for `bash` and `zsh` it can be activated by adding this in your .bashrc:
+```bash
+eval "$(_ALICE_SK_COMPLETE=source alice-sk)"
+```
+For zsh users add this to your .zshrc:
+```bash
+eval "$(_ALICE_SK_COMPLETE=source_zsh alice-sk)"
+```
 
 ## Testing
 Syntax of `dialogTemplate.json`, `talk.json` and `Module.install` files of all Modules is tested by travis using json Schemas. Further information on the tests and how to test the files locally can be found in [Tools/JsonValidator](https://github.com/project-alice-powered-by-snips/ProjectAliceModules/tree/master/Tools/JsonValidator).
