@@ -20,8 +20,16 @@ eval "$(_ALICE_SK_COMPLETE=source_zsh alice-sk)"
 ```
 
 ## Testing
-Syntax of `dialogTemplate.json`, `talk.json` and `Module.install` files of all Modules is tested by travis using json Schemas. Further information on the tests and how to test the files locally can be found in [Tools/JsonValidator](https://github.com/project-alice-powered-by-snips/ProjectAliceModules/tree/master/Tools/JsonValidator).
+It is possible to run all validation tests we currently run against a module when someone submits a PR locally using:
+```bash
+alice-sk validate --path <pathnames>
+```
+Further information on the validation tests can be found [here](https://github.com/project-alice-powered-by-snips/ProjectAliceSkillKit/blob/master/Validation.md)
 
 
 ## Auto modules creation
-Downloading Tools/Moduler you can have a basic tool to create the basic needed files for a module to work. This saves you the hassle of creating the directory tree, the required files and so on. It also follows the strict conventions we made for modules and will avoid you trouble when submitting your module for review.
+TO create the basic files needed for a module to work run:
+```bash
+alice-sk create
+```
+This saves you the hassle of creating the directory tree, the required files and so on. It also follows the strict conventions we made for modules and will avoid you trouble when submitting your module for review.
