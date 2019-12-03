@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Generator, Optional, Tuple, Union
 from unidecode import unidecode
 import requests
+from functools import lru_cache
 
 from snips_nlu_parsers import get_all_builtin_entities
 from AliceSK.validate.src.DialogTemplate import DialogTemplate
@@ -11,32 +12,31 @@ from AliceSK.validate.src.Validation import Validation
 
 class DialogValidation(Validation):
 
-	def __init__(self, username: str = None, token: str = None):
-		self._coreDialogTemplates = dict()
-		self._branch = 'master'
-		super().__init__(username, token)
+	@lru_cache()
+	def getCoreModules(self, branch: str) -> dict:
+		try:
+			url = f'https://api.github.com/repositories/193512918/contents/PublishedModules/ProjectAlice?ref={branch}'
+			modulesRequest = requests.get(url, auth=self._githubAuth)
+			modulesRequest.raise_for_status()
+			return modulesRequest.json()
+		#TODO maybe print error to console when auth failed
+		except requests.RequestException:
+			return dict()
 
 
-	def getCoreModules(self, language: str):
-		# only load language once
-		if language in self._coreDialogTemplates:
-			return
-
-		self._coreDialogTemplates[language] = list()
-		url = f'https://api.github.com/repositories/193512918/contents/PublishedModules/ProjectAlice?ref={self._branch}'
-		modulesRequest = requests.get(url, auth=self._githubAuth)
-		modulesRequest.raise_for_status()
-		modules = modulesRequest.json()
-		for module in modules:
+	@lru_cache()
+	def getCoreModuleTemplates(self, language: str, branch: str) -> list:
+		dialogTemplates = list()
+		for module in self.getCoreModules(branch):
 			try:
 				moduleName = module['name']
-				url = f'https://raw.githubusercontent.com/project-alice-powered-by-snips/ProjectAliceModules/{self._branch}/PublishedModules/ProjectAlice/{moduleName}/dialogTemplate/{language}.json'
+				url = f'https://raw.githubusercontent.com/project-alice-powered-by-snips/ProjectAliceModules/{branch}/PublishedModules/ProjectAlice/{moduleName}/dialogTemplate/{language}.json'
 				moduleRequest = requests.get(url, auth=self._githubAuth)
 				moduleRequest.raise_for_status()
-				self._coreDialogTemplates[language].append(moduleRequest.json())
-			# TODO use better exceptions
-			except Exception:
+				dialogTemplates.append(moduleRequest.json())
+			except (requests.RequestException, KeyError):
 				continue
+		return dialogTemplates
 
 
 	@property
@@ -86,13 +86,8 @@ class DialogValidation(Validation):
 
 	def getAllSlots(self, language: str) -> dict:
 		allSlots = dict()
-		try:
-			self.getCoreModules(language)
-		# TODO use better exceptions
-		except Exception:
-			pass
 
-		for dialogTemplate in self._coreDialogTemplates[language]:
+		for dialogTemplate in self.getCoreModuleTemplates(language, 'master'):
 			allSlots.update(DialogTemplate(dialogTemplate).slots)
 
 		for module in self.getRequiredModules():
@@ -208,6 +203,8 @@ class DialogValidation(Validation):
 		self.loadFiles()
 		if self._files['en']:
 			self.validateJsonSchemas()
+			if self._error:
+				return self._error
 			self.validateSlots()
 			self.validateIntents()
 

@@ -16,7 +16,7 @@ def validate(paths: list, verbose: int, token: str):
 	username = 'ProjectAlice'
 	if not token:
 		username = click.prompt('Github username')
-		token = click.prompt('Github password', hide_input=True, confirmation_prompt=True)
+		token = click.prompt('Github password', hide_input=True, confirmation_prompt=False)
 
 	valid = Validator(
 		modulePaths=paths,
