@@ -5,7 +5,6 @@ from unidecode import unidecode
 import requests
 from functools import lru_cache
 
-from snips_nlu_parsers import get_all_builtin_entities
 from AliceSK.validate.src.DialogTemplate import DialogTemplate
 from AliceSK.validate.src.Validation import Validation
 
@@ -53,7 +52,29 @@ class DialogValidation(Validation):
 	@staticmethod
 	def isSnipsBuiltinSlot(slot: str) -> bool:
 		# check whether the slot is a integrated one from snips
-		return slot in get_all_builtin_entities()
+		# hardcode supported slot types, since install snips_nlu_parsers
+		# requires a rust compiler, which is a lot of overhead for the
+		# few slot types
+		snipsSlots = {
+			'snips/date',
+			'snips/timePeriod',
+			'snips/datePeriod',
+			'snips/amountOfMoney',
+			'snips/time',
+			'snips/musicArtist',
+			'snips/musicTrack',
+			'snips/region',
+			'snips/musicAlbum',
+			'snips/country',
+			'snips/number',
+			'snips/percentage',
+			'snips/datetime',
+			'snips/city',
+			'snips/duration',
+			'snips/temperature',
+			'snips/ordinal'}
+
+		return slot in snipsSlots
 
 
 	@staticmethod

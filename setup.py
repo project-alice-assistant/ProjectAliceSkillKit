@@ -21,7 +21,6 @@ setup(
 	setup_requires=['setuptools_scm'],
 	install_requires=[
 		'jsonschema>=3.0.0',
-		'snips_nlu_parsers>=0.3.0',
 		'click',
 		'unidecode',
 		'requests',
