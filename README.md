@@ -28,7 +28,7 @@ Further information on the validation tests can be found [here](https://github.c
 
 
 ## Auto modules creation
-TO create the basic files needed for a module to work run:
+To create the basic files needed for a module to work run:
 ```bash
 alice-sk create
 ```
