@@ -6,12 +6,12 @@ from AliceSK.util.Helpers import OptionEatAll
 
 
 @click.command()
-@click.option('--paths', cls=OptionEatAll, required=True, help='module paths to test')
+@click.option('--paths', cls=OptionEatAll, required=True, help='skill paths to test')
 @click.option('-v', '--verbose', count=True, help='verbosity to print')
 @click.option('--token', help='github token')
 def validate(paths: list, verbose: int, token: str):
 	"""
-	Validate Modules
+	Validate Skills
 	"""
 	username = 'ProjectAlice'
 	if not token:
@@ -19,7 +19,7 @@ def validate(paths: list, verbose: int, token: str):
 		token = click.prompt('Github password', hide_input=True, confirmation_prompt=False)
 
 	valid = Validator(
-		modulePaths=paths,
+		skillPaths=paths,
 		verbosity=verbose,
 		username=username,
 		token=token)

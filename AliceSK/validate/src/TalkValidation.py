@@ -16,7 +16,7 @@ class TalkValidation(Validation):
 
 	@property
 	def jsonFiles(self) -> Generator[Path, None, None]:
-		return self._modulePath.glob('talks/*.json')
+		return self._skillPath.glob('talks/*.json')
 
 
 	def validateTypes(self):

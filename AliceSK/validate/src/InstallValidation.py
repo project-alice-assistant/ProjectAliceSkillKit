@@ -17,7 +17,7 @@ class InstallValidation(Validation):
 
 	@property
 	def jsonFiles(self) -> Generator[Path, None, None]:
-		return self._modulePath.glob('*.install')
+		return self._skillPath.glob('*.install')
 
 
 	def validateJsonSchema(self, file: Path):

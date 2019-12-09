@@ -8,14 +8,14 @@ import os
 from PyInquirer import style_from_dict, Token, prompt, Validator, ValidationError
 import jinja2
 
-class Moduler:
+class SkillCreator:
 	def __init__(self):
-		self._modulePath = None
+		self._skillPath = None
 		self._general = None
 		
 
 	def start(self):
-		print('\nHey welcome in this basic module creation tool!')
+		print('\nHey welcome in this basic skill creation tool!')
 		self.generalQuestions()
 		self.createDestinationFolder()
 		self.createInstallFile()
@@ -26,7 +26,7 @@ class Moduler:
 	
 		print('----------------------------\n')
 		print('All done!')
-		print(f"You can now start creating your module. You will find the main class in {self._modulePath}/{self._general['moduleName']}.py")
+		print(f"You can now start creating your skill. You will find the main class in {self._skillPath}/{self._general['skillName']}.py")
 		print('\nRemember to edit the dialogTemplate/XYZ.json and remove the dummy data!!\n')
 		print('Thank you for creating for Project Alice')
 
@@ -34,20 +34,20 @@ class Moduler:
 	def generalQuestions(self):
 		answers = prompt(FIRST_QUESTION, style=STYLE)
 
-		self._modulePath = Path.home() / 'ProjectAliceModuler' / answers['username'] / answers['moduleName']
+		self._skillPath = Path.home() / 'ProjectAliceSkillKit' / answers['username'] / answers['skillName']
 
-		while self._modulePath.exists():
+		while self._skillPath.exists():
 			questions = [
 				{
 					'type'   : 'confirm',
 					'name'   : 'delete',
-					'message': 'Seems like this module name already exists.\nDo you want to delete it locally?',
+					'message': 'Seems like this skill name already exists.\nDo you want to delete it locally?',
 					'default': False
 				},
 				{
 					'type'    : 'input',
-					'name'    : 'moduleName',
-					'message' : 'Ok, so chose another module name please',
+					'name'    : 'skillName',
+					'message' : 'Ok, so chose another skill name please',
 					'validate': NotEmpty,
 					'filter'  : lambda val: str(val).title().replace(' ', ''),
 					'when'    : lambda subAnswers: not subAnswers['delete']
@@ -55,10 +55,10 @@ class Moduler:
 			]
 			subAnswers = prompt(questions, style=STYLE)
 			if subAnswers['delete']:
-				shutil.rmtree(path=self._modulePath)
+				shutil.rmtree(path=self._skillPath)
 			else:
-				self._modulePath = Path.home() / 'ProjectAliceModuler' / answers['username'] / subAnswers['moduleName']
-				answers['moduleName'] = subAnswers['moduleName']
+				self._skillPath = Path.home() / 'ProjectAliceSkillKit' / answers['username'] / subAnswers['skillName']
+				answers['skillName'] = subAnswers['skillName']
 
 		subAnswers = prompt(NEXT_QUESTION, style=STYLE)
 		self._general = {**answers, **subAnswers}
@@ -68,17 +68,17 @@ class Moduler:
 		templateLoader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), 'templates'))
 		templateEnv = jinja2.Environment(loader=templateLoader, autoescape=True)
 		template = templateEnv.get_template(templateFile)
-		(self._modulePath / outputPath).write_text(template.render(**kwargs))
+		(self._skillPath / outputPath).write_text(template.render(**kwargs))
 
 
 	def createDirectories(self, directories: list):
 		for directory in directories:
-			(self._modulePath / directory).mkdir(parents=True, exist_ok=True)
+			(self._skillPath / directory).mkdir(parents=True, exist_ok=True)
 
 
 	def createFiles(self, files: list):
 		for file in files:
-			(self._modulePath / file).touch(exist_ok=True)
+			(self._skillPath / file).touch(exist_ok=True)
 
 
 	def createDestinationFolder(self):
@@ -91,8 +91,8 @@ class Moduler:
 		])
 
 		print('Creating python class')
-		self.createTemplateFile(f"{self._general['moduleName']}.py", 'module.py.j2',
-			moduleName=self._general['moduleName'],
+		self.createTemplateFile(f"{self._general['skillName']}.py", 'skill.py.j2',
+			skillName=self._general['skillName'],
 			description=self._general['description'],
 			username=self._general['username']
 		)
@@ -156,8 +156,8 @@ class Moduler:
 		if systemRequirements:
 			systemRequirements += '\n\t'
 
-		self.createTemplateFile(f"{self._general['moduleName']}.install", 'install.j2',
-			moduleName=self._general['moduleName'],
+		self.createTemplateFile(f"{self._general['skillName']}.install", 'install.j2',
+			skillName=self._general['skillName'],
 			description=self._general['description'],
 			username=self._general['username'],
 			langs=self._general['langs'],
@@ -171,7 +171,7 @@ class Moduler:
 		for lang in self._general['langs']:
 			print(f'- {lang}')
 			self.createTemplateFile(f'dialogTemplate/{lang}.json', 'dialog.json.j2',
-				moduleName=self._general['moduleName'],
+				skillName=self._general['skillName'],
 				description=self._general['description'],
 				username=self._general['username']
 			)
@@ -190,7 +190,7 @@ class Moduler:
 		if langs:
 			langs += '\n\t\t'
 		self.createTemplateFile('README.md', 'README.md.j2',
-			moduleName=self._general['moduleName'],
+			skillName=self._general['skillName'],
 			description=self._general['description'],
 			username=self._general['username'],
 			langs=self._general['langs']
@@ -198,13 +198,13 @@ class Moduler:
 
 
 	def createWidgets(self):
-		moduleWidgets = []
+		skillWidgets = []
 		while True:
 			questions = [
 				{
 					'type'   : 'confirm',
 					'name'   : 'widgets',
-					'message': 'Are you planning on creating widgets for you module? Widgets are used on the\ninterface to display quick informations that your module can return' if not moduleWidgets else 'Any other widgets?',
+					'message': 'Are you planning on creating widgets for you skill? Widgets are used on the\ninterface to display quick informations that your skill can return' if not skillWidgets else 'Any other widgets?',
 					'default': False
 				},
 				{
@@ -218,9 +218,9 @@ class Moduler:
 			subAnswers = prompt(questions, style=STYLE)
 			if not subAnswers['widgets'] or subAnswers['widget'] == 'stop':
 				break
-			moduleWidgets.append(subAnswers['widget'])
+			skillWidgets.append(subAnswers['widget'])
 
-		if not moduleWidgets:
+		if not skillWidgets:
 			return
 
 		print('Creating widgets base directories')
@@ -240,13 +240,13 @@ class Moduler:
 			'widgets/fonts/.gitkeep'
 		])
 
-		for widget in moduleWidgets:
+		for widget in skillWidgets:
 			widget = str(widget).title().replace(' ', '')
 			self.createTemplateFile(f'widgets/css/{widget}.css', 'widget.css.j2', widgetName=widget)
 			self.createTemplateFile(f'widgets/js/{widget}.js', 'widget.js.j2')
 			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widget.html.j2', widget=widget)
 			self.createTemplateFile(f'widgets/{widget}.py', 'widget.py.j2', widget=widget)
-			(self._modulePath / f'widgets/lang/{widget}.lang.json').write_text('{}')
+			(self._skillPath / f'widgets/lang/{widget}.lang.json').write_text('{}')
 
 
 STYLE = style_from_dict({
@@ -279,8 +279,8 @@ FIRST_QUESTION = [
 	},
 	{
 		'type'    : 'input',
-		'name'    : 'moduleName',
-		'message' : 'Please enter the name of the module you are creating',
+		'name'    : 'skillName',
+		'message' : 'Please enter the name of the skill you are creating',
 		'validate': NotEmpty,
 		'filter'  : lambda val: ''.join(x.capitalize() for x in val.split(' '))
 	}
@@ -290,14 +290,14 @@ NEXT_QUESTION = [
 	{
 		'type'    : 'input',
 		'name'    : 'description',
-		'message' : 'Please enter a description for this module',
+		'message' : 'Please enter a description for this skill',
 		'validate': NotEmpty,
 		'filter'  : lambda val: str(val).capitalize()
 	},
 	{
 		'type'    : 'checkbox',
 		'name'    : 'langs',
-		'message' : 'Choose the language for this module. Note that to share\nyour module on the official repo english is mandatory',
+		'message' : 'Choose the language for this skill. Note that to share\nyour skill on the official repo english is mandatory',
 		'validate': NotEmpty,
 		'choices' : [
 			{
@@ -330,7 +330,7 @@ NEXT_QUESTION = [
 @click.command()
 def create():
 	"""
-	creates a new module
+	creates a new skill
 	"""
-	Moduler().start()
+	SkillCreator().start()
 

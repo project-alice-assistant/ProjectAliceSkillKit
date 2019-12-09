@@ -12,27 +12,27 @@ from AliceSK.validate.src.Validation import Validation
 class DialogValidation(Validation):
 
 	@lru_cache()
-	def getCoreModules(self, branch: str) -> dict:
+	def getCoreSkills(self, branch: str) -> dict:
 		try:
-			url = f'https://api.github.com/repositories/193512918/contents/PublishedModules/ProjectAlice?ref={branch}'
-			modulesRequest = requests.get(url, auth=self._githubAuth)
-			modulesRequest.raise_for_status()
-			return modulesRequest.json()
+			url = f'https://api.github.com/repositories/193512918/contents/PublishedSkills/ProjectAlice?ref={branch}'
+			skillsRequest = requests.get(url, auth=self._githubAuth)
+			skillsRequest.raise_for_status()
+			return skillsRequest.json()
 		#TODO maybe print error to console when auth failed
 		except requests.RequestException:
 			return dict()
 
 
 	@lru_cache()
-	def getCoreModuleTemplates(self, language: str, branch: str) -> list:
+	def getCoreSkillTemplates(self, language: str, branch: str) -> list:
 		dialogTemplates = list()
-		for module in self.getCoreModules(branch):
+		for skill in self.getCoreSkills(branch):
 			try:
-				moduleName = module['name']
-				url = f'https://raw.githubusercontent.com/project-alice-powered-by-snips/ProjectAliceModules/{branch}/PublishedModules/ProjectAlice/{moduleName}/dialogTemplate/{language}.json'
-				moduleRequest = requests.get(url, auth=self._githubAuth)
-				moduleRequest.raise_for_status()
-				dialogTemplates.append(moduleRequest.json())
+				skillName = skill['name']
+				url = f'https://raw.githubusercontent.com/project-alice-powered-by-snips/ProjectAliceModules/{branch}/PublishedSkills/ProjectAlice/{skillName}/dialogTemplate/{language}.json'
+				skillRequest = requests.get(url, auth=self._githubAuth)
+				skillRequest.raise_for_status()
+				dialogTemplates.append(skillRequest.json())
 			except (requests.RequestException, KeyError):
 				continue
 		return dialogTemplates
@@ -46,7 +46,7 @@ class DialogValidation(Validation):
 
 	@property
 	def jsonFiles(self) -> Generator[Path, None, None]:
-		return self._modulePath.glob('dialogTemplate/*.json')
+		return self._skillPath.glob('dialogTemplate/*.json')
 
 
 	@staticmethod
@@ -78,41 +78,34 @@ class DialogValidation(Validation):
 
 
 	@staticmethod
-	def installerJsonFiles(modulePath: Path) -> Generator[Path, None, None]:
-		return modulePath.glob('*.install')
+	def installerJsonFiles(skillPath: Path) -> Generator[Path, None, None]:
+		return skillPath.glob('*.install')
 
 
-	def searchModule(self, moduleName: str) -> Optional[Path]:
-		for module in self._basePath.glob('PublishedModules/*/*'):
-			if module.name == moduleName:
-				return module
-		return None
-
-
-	def getRequiredModules(self, modulePath: Path = None) -> set:
-		modulePath = Path(modulePath) if modulePath else self._modulePath
-		modules = {modulePath}
+	def getRequiredSkills(self, skillPath: Path = None) -> set:
+		skillPath = Path(skillPath) if skillPath else self._skillPath
+		skills = {skillPath}
 		# TODO get from github same for .install files
-		#for installer in self.installerJsonFiles(modulePath):
+		#for installer in self.installerJsonFiles(skillPath):
 		#	data = self.validateSyntax(installer)
-		#	if data and 'module' in data['conditions']:
-		#		for module in data['conditions']['module']:
-		#			if module['name'] != modulePath.name:
-		#				path = self.searchModule(module['name'])
+		#	if data and 'skill' in data['conditions']:
+		#		for skill in data['conditions']['skill']:
+		#			if skill['name'] != skillPath.name:
+		#				path = self.searchSkill(skill['name'])
 		#				pathSet = {path} if path else set()
-		#				modules = modules.union(pathSet, self.getRequiredModules(path))
-		return modules
+		#				skills = skills.union(pathSet, self.getRequiredSkills(path))
+		return skills
 
 
 
 	def getAllSlots(self, language: str) -> dict:
 		allSlots = dict()
 
-		for dialogTemplate in self.getCoreModuleTemplates(language, 'master'):
+		for dialogTemplate in self.getCoreSkillTemplates(language, 'master'):
 			allSlots.update(DialogTemplate(dialogTemplate).slots)
 
-		for module in self.getRequiredModules():
-			path = module / 'dialogTemplate' / f'{language}.json'
+		for skill in self.getRequiredSkills():
+			path = skill / 'dialogTemplate' / f'{language}.json'
 			if path.is_file():
 				data = self._files[path.stem]
 				allSlots.update(DialogTemplate(data).slots)

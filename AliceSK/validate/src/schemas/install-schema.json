@@ -3,7 +3,7 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"$id": "https://raw.githubusercontent.com/project-alice-powered-by-snips/ProjectAliceModules/master/Tools/JsonValidator/src/schemas/install-schema.json",
 	"type": "object",
-	"title": "Module install file schema",
+	"title": "Skill install file schema",
 	"required": [
 		"name",
 		"version",
@@ -17,7 +17,7 @@
 		"name": {
 			"$id": "#/properties/name",
 			"type": "string",
-			"title": "Name of the module",
+			"title": "Name of the skill",
 			"default": "",
 			"examples": [
 				"AliceCore"
@@ -27,7 +27,7 @@
 		"version": {
 			"$id": "#/properties/version",
 			"type": "string",
-			"title": "Version of the module",
+			"title": "Version of the skill",
 			"default": "",
 			"examples": [
 				"1.0.9"
@@ -63,17 +63,17 @@
 		"desc": {
 			"$id": "#/properties/desc",
 			"type": "string",
-			"title": "Description of the module",
+			"title": "Description of the skill",
 			"default": "",
 			"examples": [
-				"This module is one of the standard modules and does support core functions such as adding users"
+				"This skill is one of the standard skills and does support core functions such as adding users"
 			],
 			"pattern": "^[a-zA-Z0-9 ,.-?!_@#%&/()='\"]+$"
 		},
 		"aliceMinVersion": {
 			"$id": "#/properties/aliceMinVersion",
 			"type": "string",
-			"title": "The minimum Alice version required for this module version to install",
+			"title": "The minimum Alice version required for this skill version to install",
 			"default": "",
 			"examples": [
 				"1.0.0-a3"
@@ -98,7 +98,7 @@
 		"script": {
 			"$id": "#/properties/script",
 			"type": "string",
-			"title": "A script to be run after the module installation",
+			"title": "A script to be run after the skill installation",
 			"default": "",
 			"examples": [
 				"postinstall.sh",
@@ -124,12 +124,12 @@
 		"conditions": {
 			"$id": "#/properties/conditions",
 			"type": "object",
-			"title": "Conditions for the module to start",
+			"title": "Conditions for the skill to start",
 			"properties": {
 				"lang": {
 					"$id": "#/properties/conditions/properties/lang",
 					"type": "array",
-					"title": "List of supported languages for this module",
+					"title": "List of supported languages for this skill",
 					"items": {
 						"$id": "#/properties/conditions/properties/lang/items",
 						"type": "string",
@@ -142,19 +142,19 @@
 						"pattern": "^(en)|(de)|(fr)$"
 					}
 				},
-				"module": {
-					"$id": "#/properties/conditions/properties/module",
+				"skill": {
+					"$id": "#/properties/conditions/properties/skill",
 					"type": "array",
-					"title": "List of required modules to start this one",
+					"title": "List of required skills to start this one",
 					"items": {
-						"$id": "#/properties/conditions/properties/modules/items",
+						"$id": "#/properties/conditions/properties/skills/items",
 						"type": "object",
-						"title": "Required module definition",
+						"title": "Required skill definition",
 						"properties": {
 							"name": {
-								"$id": "#/properties/conditions/properties/modules/items/name",
+								"$id": "#/properties/conditions/properties/skills/items/name",
 								"type": "string",
-								"title": "Name of the module",
+								"title": "Name of the skill",
 								"default": "",
 								"examples": [
 									"PhilipsHue",
@@ -163,9 +163,9 @@
 								"pattern": "^[A-Z][a-zA-Z0-9]+$"
 							},
 							"url": {
-								"$id": "#/properties/conditions/properties/modules/items/url",
+								"$id": "#/properties/conditions/properties/skills/items/url",
 								"type": "string",
-								"title": "Url to download the module",
+								"title": "Url to download the skill",
 								"default": "",
 								"examples": [
 									"http://modules.projectalice.ch/PhilipsHue"
@@ -182,19 +182,19 @@
 				"online": {
 					"$id": "#/properties/conditions/properties/online",
 					"type": "boolean",
-					"title": "If this module needs Alice to be able to access internet",
+					"title": "If this skill needs Alice to be able to access internet",
 					"default": true
 				},
 				"asrArbitraryCapture": {
 					"$id": "#/properties/conditions/properties/asrArbitraryCapture",
 					"type": "boolean",
-					"title": "If this module requires an ASR that is able to capture arbitrary text, like Google ASR, unlike Snips ASR",
+					"title": "If this skill requires an ASR that is able to capture arbitrary text, like Google ASR, unlike Snips ASR",
 					"default": true
 				},
 				"activeManager": {
 					"$id": "#/properties/conditions/properties/activeManager",
 					"type": "array",
-					"title": "List of managers that need to be active for this module to run",
+					"title": "List of managers that need to be active for this skill to run",
 					"items": {
 						"$id": "#/properties/conditions/properties/activeManager/items",
 						"type": "string",
@@ -206,14 +206,14 @@
 						"pattern": "^[A-Z][a-zA-Z]+$"
 					}
 				},
-				"notModule": {
-					"$id": "#/properties/conditions/properties/notModule",
+				"notSkill": {
+					"$id": "#/properties/conditions/properties/notSkill",
 					"type": "array",
-					"title": "List of modules that are incompatible with this one",
+					"title": "List of skills that are incompatible with this one",
 					"items": {
-						"$id": "#/properties/conditions/properties/notModule/items",
+						"$id": "#/properties/conditions/properties/notSkill/items",
 						"type": "string",
-						"title": "Module name",
+						"title": "Skill name",
 						"default": "",
 						"examples": [
 							"Psychokiller1888/Netatmo"

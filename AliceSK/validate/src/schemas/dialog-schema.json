@@ -1,14 +1,14 @@
 {
 	"type": "object",
 	"required": [
-		"module",
+		"skill",
 		"icon",
 		"description",
 		"slotTypes",
 		"intents"
 	],
 	"properties": {
-		"module": {
+		"skill": {
 			"type": "string"
 		},
 		"icon": {
