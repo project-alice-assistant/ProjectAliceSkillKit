@@ -9,19 +9,17 @@ from AliceSK.util.Helpers import OptionEatAll
 @click.option('--paths', cls=OptionEatAll, required=True, help='skill paths to test')
 @click.option('-v', '--verbose', count=True, help='verbosity to print')
 @click.option('--token', help='github token')
-def validate(paths: list, verbose: int, token: str):
+@click.option('--branch', help='branch to take core skills from')
+def validate(paths: list, verbose: int, token: str, branch: str):
 	"""
 	Validate Skills
 	"""
-	username = 'ProjectAlice'
-	if not token:
-		username = click.prompt('Github username')
-		token = click.prompt('Github password', hide_input=True, confirmation_prompt=False)
 
 	valid = Validator(
 		skillPaths=paths,
+		branch=branch or 'master',
 		verbosity=verbose,
-		username=username,
+		username='ProjectAlice',
 		token=token)
 	error = valid.validate()
 	sys.exit(error)

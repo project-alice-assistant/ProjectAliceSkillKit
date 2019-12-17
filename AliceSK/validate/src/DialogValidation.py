@@ -12,9 +12,9 @@ from AliceSK.validate.src.Validation import Validation
 class DialogValidation(Validation):
 
 	@lru_cache()
-	def getCoreSkills(self, branch: str) -> dict:
+	def getCoreSkills(self) -> dict:
 		try:
-			url = f'https://api.github.com/repositories/193512918/contents/PublishedSkills/ProjectAlice?ref={branch}'
+			url = f'https://api.github.com/repositories/193512918/contents/PublishedSkills/ProjectAlice?ref={self._branch}'
 			skillsRequest = requests.get(url, auth=self._githubAuth)
 			skillsRequest.raise_for_status()
 			return skillsRequest.json()
@@ -24,13 +24,13 @@ class DialogValidation(Validation):
 
 
 	@lru_cache()
-	def getCoreSkillTemplates(self, language: str, branch: str) -> list:
+	def getCoreSkillTemplates(self, language: str) -> list:
 		dialogTemplates = list()
-		for skill in self.getCoreSkills(branch):
+		for skill in self.getCoreSkills():
 			try:
 				skillName = skill['name']
-				url = f'https://raw.githubusercontent.com/project-alice-powered-by-snips/ProjectAliceModules/{branch}/PublishedSkills/ProjectAlice/{skillName}/dialogTemplate/{language}.json'
-				skillRequest = requests.get(url, auth=self._githubAuth)
+				url = f'https://raw.githubusercontent.com/project-alice-assistant/ProjectAliceSkills/{self._branch}/PublishedSkills/ProjectAlice/{skillName}/dialogTemplate/{language}.json'
+				skillRequest = requests.get(url)
 				skillRequest.raise_for_status()
 				dialogTemplates.append(skillRequest.json())
 			except (requests.RequestException, KeyError):
@@ -101,7 +101,7 @@ class DialogValidation(Validation):
 	def getAllSlots(self, language: str) -> dict:
 		allSlots = dict()
 
-		for dialogTemplate in self.getCoreSkillTemplates(language, 'master'):
+		for dialogTemplate in self.getCoreSkillTemplates(language):
 			allSlots.update(DialogTemplate(dialogTemplate).slots)
 
 		for skill in self.getRequiredSkills():

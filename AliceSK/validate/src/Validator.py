@@ -12,13 +12,14 @@ from AliceSK.validate.src.Validation import Validation
 
 class Validator:
 
-	def __init__(self, skillPaths: list, verbosity: int = 0, username: str = 'ProjectAlice', token: str = None):
+	def __init__(self, skillPaths: list, branch: str, verbosity: int, username: str, token: str):
 		self._dirPath = Path(__file__).resolve().parent.parent
 		self._skillPath = self._dirPath.parent.parent
 		self._skillPaths = skillPaths
 		self._verbosity = verbosity
 		self._username = username
 		self._token = token
+		self._branch = branch
 
 
 	@staticmethod
@@ -28,12 +29,16 @@ class Validator:
 
 	def validate(self):
 		err = 0
-		dialog = DialogValidation(self._username, self._token)
+		dialog = DialogValidation(branch=self._branch, username=self._username, token=self._token)
 		installer = InstallValidation()
 		talk = TalkValidation()
 		
 		for skillPath in self._skillPaths:
-			skill = Path(skillPath)
+			skill = Path(skillPath).resolve()
+			if not skill.is_dir():
+				self.indentPrint(0, click.style(f'The path {skillPath} is invalid', fg='red', bold=True))
+				continue
+
 			dialog.reset(skill)
 			installer.reset(skill)
 			talk.reset(skill)

@@ -9,14 +9,16 @@ from jsonschema import Draft7Validator, exceptions
 
 class Validation(ABC):
 
-	def __init__(self, username: str = None, token: str = None):
+	def __init__(self, branch: str = 'master', username: str = None, token: str = None):
 		self._skillPath = None
 		self._dirPath = Path(__file__).resolve().parent
 		self._basePath = self._dirPath.parent.parent.parent
 		self._error = False
 		self._files = dict()
 		self.errors = ''
+		self._branch = branch
 		self._githubAuth = (username, token) if (username and token) else None
+
 
 
 	def reset(self, skillPath: Path):
