@@ -60,7 +60,7 @@ class DialogTemplate:
 	def _initUtteranceSlots(self):
 		for intentName, intents in self.intents.items():
 			for utterance in intents['utterances']:
-				self._utteranceSlots[intentName] = self._mapUtteranceSlots(utterance, intents['slots'])
+				self._utteranceSlots[intentName] = self._mapUtteranceSlots(utterance, intents.get('slots', []))
 
 
 	@property
