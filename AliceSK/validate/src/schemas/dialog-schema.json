@@ -76,8 +76,7 @@
 					"name",
 					"description",
 					"enabledByDefault",
-					"utterances",
-					"slots"
+					"utterances"
 				],
 				"properties": {
 					"name": {
