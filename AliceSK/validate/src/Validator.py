@@ -12,14 +12,11 @@ from AliceSK.validate.src.Validation import Validation
 
 class Validator:
 
-	def __init__(self, skillPaths: list, branch: str, verbosity: int, username: str, token: str):
+	def __init__(self, skillPaths: list, verbosity: int):
 		self._dirPath = Path(__file__).resolve().parent.parent
 		self._skillPath = self._dirPath.parent.parent
 		self._skillPaths = skillPaths
 		self._verbosity = verbosity
-		self._username = username
-		self._token = token
-		self._branch = branch
 
 
 	@staticmethod
@@ -29,7 +26,7 @@ class Validator:
 
 	def validate(self):
 		err = 0
-		dialog = DialogValidation(branch=self._branch, username=self._username, token=self._token)
+		dialog = DialogValidation()
 		installer = InstallValidation()
 		talk = TalkValidation()
 		

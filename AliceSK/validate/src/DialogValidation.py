@@ -12,24 +12,18 @@ from AliceSK.validate.src.Validation import Validation
 class DialogValidation(Validation):
 
 	@lru_cache()
-	def getCoreSkills(self) -> dict:
-		try:
-			url = f'https://api.github.com/repositories/193512918/contents/PublishedSkills/ProjectAlice?ref={self._branch}'
-			skillsRequest = requests.get(url, auth=self._githubAuth)
-			skillsRequest.raise_for_status()
-			return skillsRequest.json()
-		#TODO maybe print error to console when auth failed
-		except requests.RequestException:
-			return dict()
-
-
-	@lru_cache()
 	def getCoreSkillTemplates(self, language: str) -> list:
 		dialogTemplates = list()
-		for skill in self.getCoreSkills():
+		coreSkills = [
+			'skill_AliceCore',
+			'skill_AliceSatellite',
+			'skill_ContextSensitive',
+			'skill_RedQueen',
+			'skill_Telemetry'
+		]
+		for skillName in coreSkills:
 			try:
-				skillName = skill['name']
-				url = f'https://raw.githubusercontent.com/project-alice-assistant/ProjectAliceSkills/{self._branch}/PublishedSkills/ProjectAlice/{skillName}/dialogTemplate/{language}.json'
+				url= f'https://raw.githubusercontent.com/project-alice-assistant/{skillName}/master/dialogTemplate/{language}.json'
 				skillRequest = requests.get(url)
 				skillRequest.raise_for_status()
 				dialogTemplates.append(skillRequest.json())
