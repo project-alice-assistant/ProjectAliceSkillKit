@@ -8,9 +8,9 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='alice-sk',
 	author='ProjectAlice',
-    maintainer='Max Bachmann',
-    maintainer_email='kontakt@maxbachmann.de',
-    description='skill kit of project alice',
+    maintainer='Max Bachmann, Psychokiller1888',
+    maintainer_email='kontakt@maxbachmann.de, laurentchervet@bluewin.ch',
+    description='Project Alice skill kit',
 	long_description=readme,
     long_description_content_type='text/markdown',
 	url='https://github.com/project-alice-powered-by-snips/ProjectAliceSkillKit',

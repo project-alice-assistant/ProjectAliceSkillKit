@@ -22,7 +22,7 @@ class SkillCreator:
 		self.createDialogTemplates()
 		self.createTalks()
 		self.createReadme()
-		self.createWidgets
+		self.createWidgets()
 	
 		print('----------------------------\n')
 		print('All done!')

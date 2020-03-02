@@ -34,6 +34,16 @@
 			],
 			"pattern": "^[0-9]+.[0-9]+.[0-9]+$"
 		},
+		"icon": {
+			"$id": "#/properties/icon",
+			"type": "string",
+			"title": "Skill icon",
+			"default": "",
+			"examples": [
+				"fab fa-battle-net"
+			],
+			"pattern": "^fa[a-zA-Z0-9 -]+$"
+		},
 		"author": {
 			"$id": "#/properties/author",
 			"type": "string",
@@ -59,16 +69,6 @@
 				],
 				"pattern": "^[a-zA-Z0-9 ]+$"
 			}
-		},
-		"icon": {
-			"$id": "#/properties/icon",
-			"type": "string",
-			"title": "Skill icon",
-			"default": "",
-			"examples": [
-				"fab fa-battle-net"
-			],
-			"pattern": "^[a-zA-Z0-9 -]+$"
 		},
 		"desc": {
 			"$id": "#/properties/desc",
