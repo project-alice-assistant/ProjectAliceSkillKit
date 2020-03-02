@@ -1,9 +1,8 @@
 import click
-import importlib.util
-from pathlib import Path
 
-from AliceSK.validate.JsonValidator import validate
-from AliceSK.create.create import create
+from ProjectAliceSK.create.create import create
+from ProjectAliceSK.validate.JsonValidator import validate
+
 
 @click.group(context_settings={'help_option_names':['--help', '-h']})
 def cli():

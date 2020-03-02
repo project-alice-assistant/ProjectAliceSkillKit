@@ -1,12 +1,13 @@
 from __future__ import print_function, unicode_literals
 
+import os
 import shutil
 from pathlib import Path
-import click
-import os
 
-from PyInquirer import style_from_dict, Token, prompt, Validator, ValidationError
+import click
 import jinja2
+from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
+
 
 class SkillCreator:
 	def __init__(self):
@@ -64,7 +65,7 @@ class SkillCreator:
 		self._general = {**answers, **subAnswers}
 
 
-	def createTemplateFile(self, outputPath: str, templateFile: str, **kwargs) -> str:
+	def createTemplateFile(self, outputPath: str, templateFile: str, **kwargs):
 		templateLoader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), 'templates'))
 		templateEnv = jinja2.Environment(loader=templateLoader, autoescape=True)
 		template = templateEnv.get_template(templateFile)

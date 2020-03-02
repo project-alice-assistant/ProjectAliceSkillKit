@@ -1,15 +1,16 @@
 import io
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with io.open('README.md', 'rt', encoding="utf8") as f:
     readme = f.read()
 
 setup(
-	name='alice-sk',
+	name='projectalice-sk',
+	version='1.0.2',
 	author='ProjectAlice',
-    maintainer='Max Bachmann, Psychokiller1888',
-    maintainer_email='kontakt@maxbachmann.de, laurentchervet@bluewin.ch',
+    maintainer='Psychokiller1888',
+    maintainer_email='laurentchervet@bluewin.ch',
     description='Project Alice skill kit',
 	long_description=readme,
     long_description_content_type='text/markdown',
@@ -17,8 +18,7 @@ setup(
 	license='GPL-3.0',
     packages=find_packages(),
     include_package_data=True,
-	use_scm_version=True,
-	setup_requires=['setuptools_scm'],
+	use_scm_version=False,
 	install_requires=[
 		'jsonschema>=3.0.0',
 		'click',
@@ -37,6 +37,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        alice-sk=AliceSK.ProjectAliceSkillKit:cli
+        projectalice-sk=ProjectAliceSK.ProjectAliceSkillKit:cli
     '''
 )

@@ -1,13 +1,11 @@
 from pathlib import Path
-from typing import Optional
-import requests
 
 import click
 
-from AliceSK.validate.src.DialogValidation import DialogValidation
-from AliceSK.validate.src.InstallValidation import InstallValidation
-from AliceSK.validate.src.TalkValidation import TalkValidation
-from AliceSK.validate.src.Validation import Validation
+from ProjectAliceSK.validate.src.DialogValidation import DialogValidation
+from ProjectAliceSK.validate.src.InstallValidation import InstallValidation
+from ProjectAliceSK.validate.src.TalkValidation import TalkValidation
+from ProjectAliceSK.validate.src.Validation import Validation
 
 
 class Validator:

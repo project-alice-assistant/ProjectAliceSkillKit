@@ -1,12 +1,13 @@
 import json
-from pathlib import Path
-from typing import Generator, Optional, Tuple, Union
-from unidecode import unidecode
-import requests
 from functools import lru_cache
+from pathlib import Path
+from typing import Generator, Union, Optional
 
-from AliceSK.validate.src.DialogTemplate import DialogTemplate
-from AliceSK.validate.src.Validation import Validation
+import requests
+from unidecode import unidecode
+
+from ProjectAliceSK.validate.src.DialogTemplate import DialogTemplate
+from ProjectAliceSK.validate.src.Validation import Validation
 
 
 class DialogValidation(Validation):
@@ -72,6 +73,25 @@ class DialogValidation(Validation):
 
 
 	@staticmethod
+	def isAliceBuiltinSlot(slot: str) -> bool:
+		aliceSlots = {
+			'Alice/CityNames',
+			'Alice/UserAccessLevel',
+			'Alice/WakewordCaptureResult',
+			'Alice/Languages',
+			'Alice/ComponentToUpdate',
+			'Alice/Letters',
+			'Alice/AliceHardwareTypes',
+			'Alice/Room',
+			'Alice/AnswerYesNo',
+			'Alice/Name',
+			'Alice/RandomWords'
+		}
+
+		return slot in aliceSlots
+
+
+	@staticmethod
 	def installerJsonFiles(skillPath: Path) -> Generator[Path, None, None]:
 		return skillPath.glob('*.install')
 
@@ -119,8 +139,8 @@ class DialogValidation(Validation):
 		return [value for value in values if unidecode(value).lower() not in allValues]
 
 
-	def validateIntentSlot(self, language: str, slot: str, values: list) -> Union[list,str]:
-		if self.isSnipsBuiltinSlot(slot):
+	def validateIntentSlot(self, language: str, slot: str, values: list) -> Optional[Union[str, list]]:
+		if self.isSnipsBuiltinSlot(slot) or self.isAliceBuiltinSlot(slot):
 			return
 
 		allSlots = self.getAllSlots(language)
@@ -135,6 +155,7 @@ class DialogValidation(Validation):
 			missingSlotValues = dict()
 			missingSlots = list()
 			data = self._files[file.stem]
+			intentName = ''
 			for intentName, slots in DialogTemplate(data).utteranceSlots.items():
 				for slot, values in slots.items():
 					result = self.validateIntentSlot(file.stem, slot, values)

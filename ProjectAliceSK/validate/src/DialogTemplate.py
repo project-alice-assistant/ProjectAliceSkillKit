@@ -1,6 +1,7 @@
 import re
-from typing import Match
 from collections import defaultdict
+from typing import Match
+
 
 class DialogTemplate:
 
@@ -46,7 +47,8 @@ class DialogTemplate:
 				self._cleanedUtterances[intentName][self._cleanUtterance(utterance)].append(utterance)
 
 
-	def _mapUtteranceSlots(self, utterance: str, slots: list) -> defaultdict:
+	@staticmethod
+	def _mapUtteranceSlots(utterance: str, slots: list) -> defaultdict:
 		utteranceSlotMapping = defaultdict(list)
 		slotNames = re.findall(r'{(.*?):=>(.*?)}', utterance)
 		for slot in slots:

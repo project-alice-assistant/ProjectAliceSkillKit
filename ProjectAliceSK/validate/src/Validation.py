@@ -1,9 +1,8 @@
 import json
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Generator
-import click
 
-from abc import ABC, abstractmethod
 from jsonschema import Draft7Validator, exceptions
 
 

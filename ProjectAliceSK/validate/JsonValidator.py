@@ -1,8 +1,9 @@
 import sys
+
 import click
 
-from AliceSK.validate.src.Validator import Validator
-from AliceSK.util.Helpers import OptionEatAll
+from ProjectAliceSK.util.Helpers import OptionEatAll
+from ProjectAliceSK.validate.src.Validator import Validator
 
 
 @click.command()
