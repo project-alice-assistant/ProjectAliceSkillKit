@@ -60,6 +60,16 @@
 				"pattern": "^[a-zA-Z0-9 ]+$"
 			}
 		},
+		"icon": {
+			"$id": "#/properties/icon",
+			"type": "string",
+			"title": "Skill icon",
+			"default": "",
+			"examples": [
+				"fab fa-battle-net"
+			],
+			"pattern": "^[a-zA-Z0-9 -]+$"
+		},
 		"desc": {
 			"$id": "#/properties/desc",
 			"type": "string",
@@ -139,7 +149,7 @@
 							"en",
 							"de"
 						],
-						"pattern": "^(en)|(de)|(fr)$"
+						"pattern": "^(en)|(de)|(fr)|(it)$"
 					}
 				},
 				"skill": {
