@@ -44,6 +44,29 @@
 			],
 			"pattern": "^fa[a-zA-Z0-9 -]+$"
 		},
+		"category": {
+			"$id": "#/properties/category",
+			"type": "string",
+			"title": "Category",
+			"default": "undefined",
+			"examples": [
+				"weather",
+				"information",
+				"entertainment",
+				"music",
+				"game",
+				"kid",
+				"automation",
+				"assistance",
+				"security",
+				"planning",
+				"shopping",
+				"organisation",
+				"household",
+				"health"
+			],
+			"pattern": "^(?i)(alice|weather|information|entertainment|music|game|kid|automation|assistance|security|planning|shopping|organisation|household|health|undefined)$"
+		},
 		"author": {
 			"$id": "#/properties/author",
 			"type": "string",
