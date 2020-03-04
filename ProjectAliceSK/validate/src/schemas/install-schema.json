@@ -8,6 +8,8 @@
 		"name",
 		"version",
 		"author",
+		"icon",
+		"category",
 		"maintainers",
 		"desc",
 		"aliceMinVersion",
