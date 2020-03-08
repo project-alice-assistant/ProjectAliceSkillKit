@@ -1,9 +1,9 @@
 import json
-from functools import lru_cache
 from pathlib import Path
-from typing import Generator, Union, Optional
+from typing import Generator, Optional, Union
 
 import requests
+from functools import lru_cache
 from unidecode import unidecode
 
 from ProjectAliceSK.validate.src.DialogTemplate import DialogTemplate
@@ -24,7 +24,7 @@ class DialogValidation(Validation):
 		]
 		for skillName in coreSkills:
 			try:
-				url= f'https://raw.githubusercontent.com/project-alice-assistant/{skillName}/master/dialogTemplate/{language}.json'
+				url = f'https://raw.githubusercontent.com/project-alice-assistant/{skillName}/master/dialogTemplate/{language}.json'
 				skillRequest = requests.get(url)
 				skillRequest.raise_for_status()
 				dialogTemplates.append(skillRequest.json())
@@ -100,7 +100,7 @@ class DialogValidation(Validation):
 		skillPath = Path(skillPath) if skillPath else self._skillPath
 		skills = {skillPath}
 		# TODO get from github same for .install files
-		#for installer in self.installerJsonFiles(skillPath):
+		# for installer in self.installerJsonFiles(skillPath):
 		#	data = self.validateSyntax(installer)
 		#	if data and 'skill' in data['conditions']:
 		#		for skill in data['conditions']['skill']:
@@ -109,7 +109,6 @@ class DialogValidation(Validation):
 		#				pathSet = {path} if path else set()
 		#				skills = skills.union(pathSet, self.getRequiredSkills(path))
 		return skills
-
 
 
 	def getAllSlots(self, language: str) -> dict:
@@ -165,20 +164,19 @@ class DialogValidation(Validation):
 					elif result:
 						missingSlotValues[slot] = result
 						self._error = True
-			
+
 			if missingSlots:
 				self.saveIndentedError(2, f'missing slots in {file.parent.name}/{file.name}:')
 				self.saveIndentedError(4, intentName)
 				self.printErrorList(missingSlots, 4)
-			
+
 			if missingSlotValues:
 				self.saveIndentedError(2, f'missing slot values in {file.parent.name}/{file.name}:')
 				for slot, missingValues in sorted(missingSlotValues.items()):
 					self.saveIndentedError(8, f'intent: {intentName}, slot: {slot}')
 					self.printErrorList(missingValues, 8)
-			
-		
-	
+
+
 	def validateIntents(self) -> None:
 		allIntents = DialogTemplate(self._files['en']).intents
 

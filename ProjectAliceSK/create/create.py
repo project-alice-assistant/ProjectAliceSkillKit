@@ -1,19 +1,20 @@
 from __future__ import print_function, unicode_literals
 
-import os
-import shutil
 from pathlib import Path
 
 import click
 import jinja2
+import os
+import shutil
 from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 
 
 class SkillCreator:
+
 	def __init__(self):
 		self._skillPath = None
 		self._general = None
-		
+
 
 	def start(self):
 		print('\nHey welcome in this basic skill creation tool!')
@@ -24,7 +25,7 @@ class SkillCreator:
 		self.createTalks()
 		self.createReadme()
 		self.createWidgets()
-	
+
 		print('----------------------------\n')
 		print('All done!')
 		print(f"You can now start creating your skill. You will find the main class in {self._skillPath}/{self._general['skillName']}.py")
@@ -93,10 +94,10 @@ class SkillCreator:
 
 		print('Creating python class')
 		self.createTemplateFile(f"{self._general['skillName']}.py", 'skill.py.j2',
-			skillName=self._general['skillName'],
-			description=self._general['description'],
-			username=self._general['username']
-		)
+		                        skillName=self._general['skillName'],
+		                        description=self._general['description'],
+		                        username=self._general['username']
+		                        )
 
 
 	def createInstallFile(self):
@@ -158,13 +159,13 @@ class SkillCreator:
 			systemRequirements += '\n\t'
 
 		self.createTemplateFile(f"{self._general['skillName']}.install", 'install.j2',
-			skillName=self._general['skillName'],
-			description=self._general['description'],
-			username=self._general['username'],
-			langs=self._general['langs'],
-			pipRequirements=reqs,
-			systemRequirements=sysreqs
-		)
+		                        skillName=self._general['skillName'],
+		                        description=self._general['description'],
+		                        username=self._general['username'],
+		                        langs=self._general['langs'],
+		                        pipRequirements=reqs,
+		                        systemRequirements=sysreqs
+		                        )
 
 
 	def createDialogTemplates(self):
@@ -172,10 +173,10 @@ class SkillCreator:
 		for lang in self._general['langs']:
 			print(f'- {lang}')
 			self.createTemplateFile(f'dialogTemplate/{lang}.json', 'dialog.json.j2',
-				skillName=self._general['skillName'],
-				description=self._general['description'],
-				username=self._general['username']
-			)
+			                        skillName=self._general['skillName'],
+			                        description=self._general['description'],
+			                        username=self._general['username']
+			                        )
 
 
 	def createTalks(self):
@@ -191,11 +192,11 @@ class SkillCreator:
 		if langs:
 			langs += '\n\t\t'
 		self.createTemplateFile('README.md', 'README.md.j2',
-			skillName=self._general['skillName'],
-			description=self._general['description'],
-			username=self._general['username'],
-			langs=self._general['langs']
-		)
+		                        skillName=self._general['skillName'],
+		                        description=self._general['description'],
+		                        username=self._general['username'],
+		                        langs=self._general['langs']
+		                        )
 
 
 	def createWidgets(self):
@@ -260,14 +261,15 @@ STYLE = style_from_dict({
 	Token.Input       : '#99ff33 bold'
 })
 
+
 class NotEmpty(Validator):
+
 	def validate(self, document):
 		if not document.text:
 			raise ValidationError(
 				message='This cannot be empty',
 				cursor_position=len(document.text)
 			)
-
 
 
 FIRST_QUESTION = [
@@ -334,4 +336,3 @@ def create():
 	creates a new skill
 	"""
 	SkillCreator().start()
-

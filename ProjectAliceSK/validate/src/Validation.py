@@ -1,8 +1,8 @@
 import json
-from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Generator
 
+from abc import ABC, abstractmethod
 from jsonschema import Draft7Validator, exceptions
 
 
@@ -15,7 +15,6 @@ class Validation(ABC):
 		self._error = False
 		self._files = dict()
 		self.errors = ''
-
 
 
 	def reset(self, skillPath: Path):

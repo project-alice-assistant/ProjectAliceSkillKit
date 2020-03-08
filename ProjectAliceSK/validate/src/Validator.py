@@ -27,7 +27,7 @@ class Validator:
 		dialog = DialogValidation()
 		installer = InstallValidation()
 		talk = TalkValidation()
-		
+
 		for skillPath in self._skillPaths:
 			skill = Path(skillPath).resolve()
 			if not skill.is_dir():
@@ -37,11 +37,11 @@ class Validator:
 			dialog.reset(skill)
 			installer.reset(skill)
 			talk.reset(skill)
-			
+
 			dialog.validate(self._verbosity)
 			installer.validate()
 			talk.validate()
-			
+
 			if dialog.errorCode or installer.errorCode or talk.errorCode:
 				err = 1
 				self.indentPrint(0, click.style(f'{skill.name}', fg='red', bold=True), 'invalid')

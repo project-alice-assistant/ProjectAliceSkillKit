@@ -1,6 +1,7 @@
-import re
 from collections import defaultdict
 from typing import Match
+
+import re
 
 
 class DialogTemplate:
@@ -32,6 +33,7 @@ class DialogTemplate:
 	def _cleanUtterance(self, utterance: str) -> str:
 		def upperRepl(match: Match) -> str:
 			return match.group(1).upper()
+
 
 		cleanUtterance = utterance.lower()
 		if self._verbosity:
