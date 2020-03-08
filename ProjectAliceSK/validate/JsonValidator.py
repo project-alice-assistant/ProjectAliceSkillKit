@@ -1,3 +1,4 @@
+import os
 import sys
 
 import click
@@ -7,12 +8,15 @@ from ProjectAliceSK.validate.src.Validator import Validator
 
 
 @click.command()
-@click.option('--paths', cls=OptionEatAll, required=True, help='skill paths to test')
-@click.option('-v', '--verbose', count=True, help='verbosity to print')
+@click.option('-p', '--paths', 'string', cls=OptionEatAll, required=False, help='Paths to test')
+@click.option('-v', '--verbose', count=True, help='Verbosity level')
 def validate(paths: list, verbose: int):
 	"""
 	Validate Skills
 	"""
+
+	if not paths:
+		paths = [os.getcwd()]
 
 	valid = Validator(
 		skillPaths=paths,

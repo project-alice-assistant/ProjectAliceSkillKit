@@ -1,0 +1,25 @@
+{
+	"type": "object",
+	"required": [
+		"defaultValue",
+		"dataType",
+		"isSensitve",
+		"description"
+	],
+	"properties": {
+		"defaultValue": {
+			"type": "string"
+		},
+		"datatype": {
+			"type": "string"
+		},
+		"isSensitive": {
+			"type": "boolean"
+		},
+		"description": {
+			"type": [
+				"string"
+			]
+		}
+	}
+}
