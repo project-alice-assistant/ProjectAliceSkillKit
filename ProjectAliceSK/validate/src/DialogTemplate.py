@@ -1,7 +1,6 @@
+import re
 from collections import defaultdict
 from typing import Match
-
-import re
 
 
 class DialogTemplate:
@@ -37,7 +36,7 @@ class DialogTemplate:
 
 		cleanUtterance = utterance.lower()
 		if self._verbosity:
-			cleanUtterance = re.sub(r'{.*?:=>(.*?)}', upperRepl, cleanUtterance)
+			cleanUtterance = re.sub(r'{.+?:=>(.+?)}', upperRepl, cleanUtterance)
 		cleanUtterance = re.sub(r'[^a-zA-Z1-9 ]', '', cleanUtterance)
 		return ' '.join(cleanUtterance.split())
 
