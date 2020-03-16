@@ -103,7 +103,7 @@
 			"examples": [
 				"This skill is one of the standard skills and does support core functions such as adding users"
 			],
-			"pattern": "^[a-zA-Z0-9 ,.-?!_@#%&/()='\"]+$"
+			"minLength": 10
 		},
 		"aliceMinVersion": {
 			"$id": "#/properties/aliceMinVersion",
