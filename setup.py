@@ -7,7 +7,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 
 setup(
 	name='projectalice-sk',
-	version='1.0.5',
+	version='1.0.6',
 	author='ProjectAlice',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
