@@ -1,25 +1,52 @@
 {
 	"type": "object",
-	"required": [
-		"defaultValue",
-		"dataType",
-		"isSensitve",
-		"description"
-	],
-	"properties": {
-		"defaultValue": {
-			"type": "string"
-		},
-		"datatype": {
-			"type": "string"
-		},
-		"isSensitive": {
-			"type": "boolean"
-		},
-		"description": {
-			"type": [
-				"string"
-			]
+	"patternProperties": {
+		"^[a-z][a-zA-Z]+$": {
+			"type": "object",
+			"required": [
+				"defaultValue",
+				"dataType",
+				"isSensitive",
+				"description"
+			],
+			"properties": {
+				"defaultValue": {
+					"type": "string"
+				},
+				"dataType": {
+					"type": "string",
+					"enum": [
+						"string",
+						"boolean",
+						"integer",
+						"list"
+					]
+				},
+				"isSensitive": {
+					"type": "boolean"
+				},
+				"description": {
+					"type": "string",
+					"minLength": 10,
+					"pattern": "^[A-Z].*$"
+				},
+				"display": {
+					"type": "string",
+					"enum": [
+						"hidden"
+					]
+				},
+				"beforeUpdate": {
+					"type": "string",
+					"pattern": "^[a-z].*$"
+				},
+				"onUpdate": {
+					"type": "string",
+					"pattern": "^[a-z].*$"
+				}
+			},
+			"additionalProperties": false
 		}
-	}
+	},
+	"additionalProperties": false
 }
