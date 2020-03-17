@@ -7,6 +7,13 @@ If you're not uptodate with json validation schemas, here's what's tested
 ### Install files
 
 ### Talk files
+- Checks that every values are either of type `object` or `array`
+- In object type
+  - Checks that `default` property is set, of type array with items of type string
+  - Checks, if defined, that `short`property is of type array with items of type string
+  - Checks that no additional properties are given
+- In array type
+  - Checks that items are of type string
 
 ### Config template files
 - Checks that all config names start with a lowercase letter, contain only letters
