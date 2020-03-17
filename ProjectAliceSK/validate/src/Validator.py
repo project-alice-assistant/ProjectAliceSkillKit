@@ -2,6 +2,7 @@ from pathlib import Path
 
 import click
 
+from ProjectAliceSK.validate.src.ConfigValidation import ConfigValidation
 from ProjectAliceSK.validate.src.DialogValidation import DialogValidation
 from ProjectAliceSK.validate.src.InstallValidation import InstallValidation
 from ProjectAliceSK.validate.src.TalkValidation import TalkValidation
@@ -27,6 +28,7 @@ class Validator:
 		dialog = DialogValidation()
 		installer = InstallValidation()
 		talk = TalkValidation()
+		config = ConfigValidation()
 
 		for skillPath in self._skillPaths:
 			skill = Path(skillPath).resolve()
@@ -37,10 +39,12 @@ class Validator:
 			dialog.reset(skill)
 			installer.reset(skill)
 			talk.reset(skill)
+			config.reset(skill)
 
 			dialog.validate(self._verbosity)
 			installer.validate()
 			talk.validate()
+			config.validate()
 
 			if dialog.errorCode or installer.errorCode or talk.errorCode:
 				err = 1
@@ -48,6 +52,7 @@ class Validator:
 				self.printErrors('Installer', installer)
 				self.printErrors('Dialog files', dialog)
 				self.printErrors('Talk files', talk)
+				self.printErrors('Config file', config)
 				self.indentPrint(0)
 			else:
 				self.indentPrint(0, click.style(f'{skill.name}', fg='green', bold=True), 'valid')
