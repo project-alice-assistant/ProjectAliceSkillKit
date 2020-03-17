@@ -15,7 +15,7 @@ If you're not uptodate with json validation schemas, here's what's tested
   - `dataType` of type string, allowed only [string, boolean, integer, list]
   - `isSensitive` of type boolean
   - `description` of type string, of minimun 10 characters lenght, starting with a capital letter
-- Checks and allow the following optional properties and no other
+- Checks and allows the following optional properties and no other
   - `display` of type string. allowed only [hidden]
   - `beforeUpdate` of type string, starting with a small letter
   - `onUpdate` of type string, starting with a small letter
