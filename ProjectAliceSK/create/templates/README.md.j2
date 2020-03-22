@@ -1,14 +1,13 @@
 # {{ skillName }}
 
-### Description
-{{description}}
-- Version: 0.0.1
+[![Continous Integration](https://gitlab.com/project-alice-assistant/skills/skill_{{ skillName }}/badges/master/pipeline.svg)](https://gitlab.com/project-alice-assistant/skills/skill_{{ skillName }}/pipelines/latest)
+
+{{ description }}
+
 - Author: {username}
 - Maintainers: N/A
 - Alice minimum version: 1.0.0
-- Conditions:
-{%- for lang in langs %}
+- Languages:
+{% for lang in langs %}
   - {{ lang }}
-{%- endfor %}
-- Pip requirements: N/A
-- System requirements: N/A
+{% endfor %}
