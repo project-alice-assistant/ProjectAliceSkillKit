@@ -24,6 +24,19 @@
 						"longstring"
 					]
 				},
+				"category": {
+					"type": "string",
+					"enum": [
+						"asr",
+						"nlu",
+						"system",
+						"device",
+						"credentials",
+						"mqtt",
+						"tts",
+						"wakeword"
+					]
+				},
 				"isSensitive": {
 					"type": "boolean"
 				},
