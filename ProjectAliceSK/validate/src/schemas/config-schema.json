@@ -7,7 +7,8 @@
 				"defaultValue",
 				"dataType",
 				"isSensitive",
-				"description"
+				"description",
+				"category"
 			],
 			"properties": {
 				"defaultValue": {
