@@ -19,7 +19,9 @@
 						"string",
 						"boolean",
 						"integer",
-						"list"
+						"list",
+						"range",
+						"longstring"
 					]
 				},
 				"isSensitive": {
