@@ -183,35 +183,13 @@
 					"title": "List of required skills to start this one",
 					"items": {
 						"$id": "#/properties/conditions/properties/skills/items",
-						"type": "object",
+						"type": "string",
 						"title": "Required skill definition",
-						"properties": {
-							"name": {
-								"$id": "#/properties/conditions/properties/skills/items/name",
-								"type": "string",
-								"title": "Name of the skill",
-								"default": "",
-								"examples": [
-									"PhilipsHue",
-									"Bring"
-								],
-								"pattern": "^[A-Z][a-zA-Z0-9]+$"
-							},
-							"url": {
-								"$id": "#/properties/conditions/properties/skills/items/url",
-								"type": "string",
-								"title": "Url to download the skill",
-								"default": "",
-								"examples": [
-									"http://modules.projectalice.ch/PhilipsHue"
-								],
-								"pattern": "^(http(s)?:/{2})[a-zA-Z0-9.-_]+$"
-							}
-						},
-						"required": [
-							"name",
-							"url"
-						]
+						"default": "",
+						"examples": [
+							"Telemetry"
+						],
+						"pattern": "^[A-Z][a-zA-Z0-9]+$"
 					}
 				},
 				"online": {
