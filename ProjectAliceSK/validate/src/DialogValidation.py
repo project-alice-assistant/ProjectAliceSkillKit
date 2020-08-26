@@ -75,14 +75,16 @@ class DialogValidation(Validation):
 	@staticmethod
 	def isAliceBuiltinSlot(slot: str) -> bool:
 		aliceSlots = {
+			'Alice/Countries',
 			'Alice/CityNames',
 			'Alice/UserAccessLevel',
-			'Alice/WakewordCaptureResult',
 			'Alice/Languages',
+			'Alice/PersonalPronoun',
+			'Alice/WakewordCaptureResult',
 			'Alice/ComponentToUpdate',
 			'Alice/Letters',
 			'Alice/AliceHardwareTypes',
-			'Alice/Room',
+			'Alice/Location',
 			'Alice/AnswerYesNo',
 			'Alice/Name',
 			'Alice/RandomWords'
@@ -228,6 +230,9 @@ class DialogValidation(Validation):
 
 	def validate(self, verbosity: int = 0) -> bool:
 		self.loadFiles()
+		if 'en' not in self._files:
+			self.saveIndentedError(2, f'duplicates in {file.parent.name}/{file.name}:')
+
 		if self._files['en']:
 			self.validateJsonSchemas()
 			if self._error:
