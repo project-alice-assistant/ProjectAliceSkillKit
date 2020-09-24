@@ -1,9 +1,9 @@
 import json
+from functools import lru_cache
 from pathlib import Path
 from typing import Generator, Optional, Union
 
 import requests
-from functools import lru_cache
 from unidecode import unidecode
 
 from ProjectAliceSK.validate.src.DialogTemplate import DialogTemplate
@@ -36,7 +36,7 @@ class DialogValidation(Validation):
 	@property
 	def jsonSchema(self) -> dict:
 		schema = self._dirPath / 'schemas/dialog-schema.json'
-		return json.loads(schema.read_text())
+		return json.loads(schema.read_text(encoding='utf-8'))
 
 
 	@property

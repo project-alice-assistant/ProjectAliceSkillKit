@@ -1,8 +1,8 @@
 import json
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Generator
 
-from abc import ABC, abstractmethod
 from jsonschema import Draft7Validator, exceptions
 
 
@@ -47,7 +47,7 @@ class Validation(ABC):
 	def validateSyntax(self, file: Path) -> dict:
 		data: dict = dict()
 		try:
-			data = json.loads(file.read_text())
+			data = json.loads(file.read_text(encoding='utf-8'))
 		except ValueError as e:
 			self.saveIndentedError(2, f'syntax errors in {file.parent.name}/{file.name}:')
 			self.saveIndentedError(4, f'- {e}')
