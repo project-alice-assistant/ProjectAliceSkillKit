@@ -12,7 +12,7 @@ class InstallValidation(Validation):
 	@property
 	def jsonSchema(self) -> dict:
 		schema = self._dirPath / 'schemas/install-schema.json'
-		return json.loads(schema.read_text())
+		return json.loads(schema.read_text(encoding='utf-8'))
 
 
 	@property
