@@ -24,7 +24,7 @@ eval "$(_ALICE_SK_COMPLETE=source_zsh projectalice-sk)"
 ## Testing
 It is possible to run all validation tests we currently run against a skill when someone submits a PR locally using:
 ```bash
-projectalice-sk validate --path <pathnames>
+projectalice-sk validate --paths <pathnames>
 ```
 Further information on the validation tests can be found [here](https://github.com/project-alice-powered-by-snips/ProjectAliceSkillKit/blob/master/Validation.md)
 
