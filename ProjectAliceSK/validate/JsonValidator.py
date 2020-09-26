@@ -22,9 +22,14 @@ def validate(paths: Union[str, list], verbose: int):
 	try:
 		test = Path(paths[0])
 		if test.is_dir():
-			paths = [d for d in test.iterdir() if d.is_dir()]
+			if Path(test / 'dialogTemplate').exists():
+				raise Exception
+
+			paths = tuple([str(d) for d in test.iterdir() if d.is_dir()])
 	except:
 		pass  # do nothing
+
+	print(paths)
 
 	validator = Validator(skillPaths=paths, verbosity=verbose)
 	error = validator.validate()
