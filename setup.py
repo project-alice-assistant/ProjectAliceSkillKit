@@ -14,7 +14,7 @@ setup(
 	description='Project Alice skill kit',
 	long_description=readme,
 	long_description_content_type='text/markdown',
-	url='https://github.com/project-alice-powered-by-snips/ProjectAliceSkillKit',
+	url='https://github.com/project-alice-assistant/ProjectAliceSkillKit',
 	license='GPL-3.0',
 	packages=find_packages(),
 	include_package_data=True,
