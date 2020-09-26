@@ -29,8 +29,6 @@ def validate(paths: Union[str, list], verbose: int):
 	except:
 		pass  # do nothing
 
-	print(paths)
-
 	validator = Validator(skillPaths=paths, verbosity=verbose)
 	error = validator.validate()
 	sys.exit(error)
