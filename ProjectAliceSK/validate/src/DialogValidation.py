@@ -87,7 +87,8 @@ class DialogValidation(Validation):
 			'Alice/Location',
 			'Alice/AnswerYesNo',
 			'Alice/Name',
-			'Alice/RandomWords'
+			'Alice/RandomWords',
+			'Alice/Colors'
 		}
 
 		return slot in aliceSlots
@@ -231,7 +232,7 @@ class DialogValidation(Validation):
 	def validate(self, verbosity: int = 0) -> bool:
 		self.loadFiles()
 		if 'en' not in self._files:
-			self.saveIndentedError(2, f'duplicates in {file.parent.name}/{file.name}:')
+			self.saveIndentedError(2, f'Missing english dialog file')
 
 		if self._files['en']:
 			self.validateJsonSchemas()
