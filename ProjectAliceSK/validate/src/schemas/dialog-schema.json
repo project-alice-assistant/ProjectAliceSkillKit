@@ -64,19 +64,12 @@
 				"type": "object",
 				"required": [
 					"name",
-					"description",
 					"enabledByDefault",
 					"utterances"
 				],
 				"properties": {
 					"name": {
 						"type": "string"
-					},
-					"description": {
-						"type": [
-							"string",
-							"null"
-						]
 					},
 					"enabledByDefault": {
 						"type": "boolean"
@@ -93,7 +86,6 @@
 							"type": "object",
 							"required": [
 								"name",
-								"description",
 								"required",
 								"type",
 								"missingQuestion"
@@ -101,12 +93,6 @@
 							"properties": {
 								"name": {
 									"type": "string"
-								},
-								"description": {
-									"type": [
-										"string",
-										"null"
-									]
 								},
 								"required": {
 									"type": "boolean"

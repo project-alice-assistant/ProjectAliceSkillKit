@@ -1,11 +1,11 @@
 from __future__ import print_function, unicode_literals
 
+import os
+import shutil
 from pathlib import Path
 
 import click
 import jinja2
-import os
-import shutil
 from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 
 
@@ -174,7 +174,6 @@ class SkillCreator:
 			print(f'- {lang}')
 			self.createTemplateFile(f'dialogTemplate/{lang}.json', 'dialog.json.j2',
 			                        skillName=self._general['skillName'],
-			                        description=self._general['description'],
 			                        username=self._general['username']
 			                        )
 
