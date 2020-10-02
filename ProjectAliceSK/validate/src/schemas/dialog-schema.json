@@ -2,23 +2,12 @@
 	"type": "object",
 	"required": [
 		"skill",
-		"icon",
-		"description",
 		"slotTypes",
 		"intents"
 	],
 	"properties": {
 		"skill": {
 			"type": "string"
-		},
-		"icon": {
-			"type": "string"
-		},
-		"description": {
-			"type": [
-				"string",
-				"null"
-			]
 		},
 		"slotTypes": {
 			"type": "array",
