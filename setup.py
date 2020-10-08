@@ -8,7 +8,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='projectalice-sk',
 	author='ProjectAlice',
-	version='1.2.2',
+	version='1.2.3',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
 	description='Project Alice skill kit',
@@ -30,12 +30,15 @@ setup(
 		'jinja2'
 	],
 	classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Environment :: Console",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Programming Language :: Python :: 3.7",
-    ],
+		"Development Status :: 5 - Production/Stable",
+		"Environment :: Console",
+		"Intended Audience :: Developers",
+		"License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+		"Operating System :: OS Independent",
+		"Programming Language :: Python :: 3.7",
+		"Topic :: Software Development :: Code Generators",
+		"Topic :: Software Development :: Testing"
+	],
     entry_points='''
         [console_scripts]
         projectalice-sk=ProjectAliceSK.ProjectAliceSkillKit:cli

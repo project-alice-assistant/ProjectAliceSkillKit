@@ -16,14 +16,14 @@
 	],
 	"properties": {
 		"name": {
-			"$id": "#/properties/name",
-			"type": "string",
-			"title": "Name of the skill",
-			"default": "",
+			"$id"     : "#/properties/name",
+			"type"    : "string",
+			"title"   : "Name of the skill",
+			"default" : "",
 			"examples": [
 				"AliceCore"
 			],
-			"pattern": "^[a-zA-Z0-9]+$"
+			"pattern" : "^[A-Z][a-zA-Z0-9]+$"
 		},
 		"version": {
 			"$id": "#/properties/version",
@@ -88,8 +88,8 @@
 				"title": "Github username",
 				"default": "",
 				"examples": [
-					"maxbachmann",
-					"Psychokiller1888"
+					"Psychokiller1888",
+					"philipp2310"
 				],
 				"pattern": "^[a-zA-Z0-9 ]+$"
 			}
@@ -115,30 +115,30 @@
 			"pattern": "^[0-9]+.[0-9]+.[0-9]+(-((a)+|(b)+|(rc)+)[0-9]+)?$"
 		},
 		"systemRequirements": {
-			"$id": "#/properties/systemRequirements",
-			"type": "array",
-			"title": "Add any requirements that need to be install through apt-get",
+			"$id"  : "#/properties/systemRequirements",
+			"type" : "array",
+			"title": "Add any requirements that need to be installed through apt-get",
 			"items": {
-				"$id": "#/properties/systemRequirements/items",
-				"type": "string",
-				"title": "apt-get package",
-				"default": "",
+				"$id"     : "#/properties/systemRequirements/items",
+				"type"    : "string",
+				"title"   : "apt-get package",
+				"default" : "",
 				"examples": [
 					"pyaudio"
 				],
-				"pattern": "^(.*)$"
+				"pattern" : "^(.*)$"
 			}
 		},
 		"script": {
-			"$id": "#/properties/script",
-			"type": "string",
-			"title": "A script to be run after the skill installation",
-			"default": "",
+			"$id"     : "#/properties/script",
+			"type"    : "string",
+			"title"   : "A script to be run after skill installation",
+			"default" : "",
 			"examples": [
 				"postinstall.sh",
 				"checkDependancies.sh"
 			],
-			"pattern": "^[a-z-A-Z0-9]+.sh$"
+			"pattern" : "^[a-z-A-Z0-9]+.sh$"
 		},
 		"pipRequirements": {
 			"$id": "#/properties/pipRequirements",
