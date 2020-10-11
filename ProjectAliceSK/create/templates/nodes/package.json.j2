@@ -1,0 +1,16 @@
+{
+	"name": "{{ skillName }}",
+	"version": "0.0.1",
+	"category": "projectalice",
+	"dependencies": {},
+	"author": "{{ username }}",
+	"license": "GPLv3",
+	"node-red": {
+		"nodes": {
+		{%- for node in nodes %}
+			"{{ node }}": "{{ node }}.js"{{ ',' if not loop.last -}}{{ '\n' if loop.last }}
+		{%- endfor %}
+		}
+	},
+	"devDependencies": {}
+}

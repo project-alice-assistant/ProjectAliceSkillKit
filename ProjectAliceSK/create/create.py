@@ -17,7 +17,16 @@ class SkillCreator:
 
 
 	def start(self):
-		print('\nHey welcome in this basic skill creation tool!')
+		print(' _____ _    _ _ _   _   ___ _   ')
+		print('/  ___| |  (_) | | | | / (_) |  ')
+		print('\ `--.| | ___| | | | |/ / _| |_ ')
+		print(' `--. \ |/ / | | | |    \| | __|')
+		print('/\__/ /   <| | | | | |\  \ | |_ ')
+		print('\____/|_|\_\_|_|_| \_| \_/_|\__|')
+		print('\nWelcome in the skill creation tool')
+		print('This tool will help you in creating a new skill\n')
+		print("Did you know that you can also create skills via Alice's web interface?\n")
+
 		self.generalQuestions()
 		self.createDestinationFolder()
 		self.createInstallFile()
@@ -25,10 +34,11 @@ class SkillCreator:
 		self.createTalks()
 		self.createReadme()
 		self.createWidgets()
+		self.createScenarioNodes()
 
 		print('----------------------------\n')
 		print('All done!')
-		print(f"You can now start creating your skill. You will find the main class in {self._skillPath}/{self._general['skillName']}.py")
+		print(f"You can now start creating your skill. You will find the main class in {Path(self._skillPath, self._general['skillName']).with_suffix('.py')}")
 		print('\nRemember to edit the dialogTemplate/XYZ.json and remove the dummy data!!\n')
 		print('Thank you for creating for Project Alice')
 
@@ -234,6 +244,7 @@ class SkillCreator:
 			'widgets/templates'
 		])
 
+		print('Creating widgets files')
 		self.createFiles([
 			'widgets/__init__.py',
 			'widgets/css/common.css',
@@ -248,6 +259,46 @@ class SkillCreator:
 			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widget.html.j2', widget=widget)
 			self.createTemplateFile(f'widgets/{widget}.py', 'widget.py.j2', widget=widget)
 			(self._skillPath / f'widgets/lang/{widget}.lang.json').write_text('{}')
+
+
+	def createScenarioNodes(self):
+		skillNodes = []
+		while True:
+			questions = [
+				{
+					'type'   : 'confirm',
+					'name'   : 'nodes',
+					'message': 'Are you planning on creating scenario nodes? Scenario nodes are used on the\ninterface for users to create interactions between skills!' if not skillNodes else 'Any other node?',
+					'default': False
+				},
+				{
+					'type'    : 'input',
+					'name'    : 'node',
+					'message' : 'Enter the name of the node',
+					'validate': NotEmpty,
+					'filter'  : lambda val: str(val)[0].lower() + str(val).title().replace(' ', '')[1:],
+					'when'    : lambda subAnswers: subAnswers['nodes']
+				}
+			]
+			subAnswers = prompt(questions, style=STYLE)
+			if not subAnswers['nodes'] or subAnswers['node'] == 'stop':
+				break
+			skillNodes.append(subAnswers['node'])
+
+		if not skillNodes:
+			return
+
+		print('Creating scenario nodes base directories')
+		self.createDirectories([f'scenarioNodes/locales/{lang}' for lang in self._general['langs']])
+
+		print('Creating scenario nodes files')
+		self.createTemplateFile(f'scenarioNodes/package.json', 'nodes/package.json.j2', skillName=self._general['skillName'].lower(), username=self._general['username'], nodes=skillNodes)
+		for nodeName in skillNodes:
+			self.createTemplateFile(f'scenarioNodes/{nodeName}.js', 'nodes/node.js.j2', nodeName=nodeName)
+			self.createTemplateFile(f'scenarioNodes/{nodeName}.html', 'nodes/node.html.j2', nodeName=nodeName, skillName=self._general['skillName'])
+
+			for lang in self._general['langs']:
+				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.js', 'nodes/locales.json.j2', nodeName=nodeName)
 
 
 STYLE = style_from_dict({

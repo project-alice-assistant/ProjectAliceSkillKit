@@ -8,6 +8,8 @@ class {{ skillName }}(AliceSkill):
 	Author: {{ username }}
 	Description: {{ description }}
 	"""
+
+
 	@IntentHandler('MyIntentName')
 	def testIntent(self, session: DialogSession, **_kwargs):
 		pass
