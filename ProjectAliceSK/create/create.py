@@ -1,11 +1,14 @@
 from __future__ import print_function, unicode_literals
 
+import json
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
 import click
 import jinja2
+import requests
 from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 
 
@@ -35,6 +38,7 @@ class SkillCreator:
 		self.createReadme()
 		self.createWidgets()
 		self.createScenarioNodes()
+		self.uploadGithub()
 
 		print('----------------------------\n')
 		print('All done!')
@@ -301,6 +305,41 @@ class SkillCreator:
 				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.js', 'nodes/locales.json.j2', nodeName=nodeName)
 
 
+	def uploadGithub(self):
+		while True:
+			questions = [
+				{
+					'type'   : 'confirm',
+					'name'   : 'uploadToGithub',
+					'message': 'The Skill Kit can upload your skill to Github. You need\n a Github account for that. Do you wish to upload your skill?',
+					'default': False
+				},
+				{
+					'type'    : 'password',
+					'name'    : 'githubToken',
+					'message' : 'Please enter your Github TOKEN (not password!)',
+					'validate': NotEmpty,
+					'when'    : lambda subAnswers: subAnswers['uploadToGithub']
+				}
+			]
+			subAnswers = prompt(questions, style=STYLE)
+			if not subAnswers['uploadToGithub'] or subAnswers['githubToken']:
+				break
+
+		if subAnswers['uploadToGithub']:
+			result = uploadSkillToGithub(
+				githubToken=subAnswers['githubToken'],
+				skillAuthor=self._general['username'],
+				skillName=self._general["skillName"],
+				skillPath=self._skillPath,
+				skillDesc=self._general['description']
+			)
+			if not result:
+				print('\nUnfortunately something went wrong uploading your skill. You can always do it manually!')
+			else:
+				print('\nYour skill was uploaded to your Github account!')
+
+
 STYLE = style_from_dict({
 	Token.QuestionMark: '#996633 bold',
 	Token.Selected    : '#5F819D bold',
@@ -378,6 +417,44 @@ NEXT_QUESTION = [
 		]
 	}
 ]
+
+
+def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skillPath: Path, skillDesc: str) -> bool:
+	try:
+		print(f'Uploading {skillName} to Github')
+
+		if not skillPath.exists():
+			raise Exception("Local skill doesn't exist")
+
+		data = {
+			'name'       : f'skill_{skillName}',
+			'description': skillDesc,
+			'has-issues' : True,
+			'has-wiki'   : False
+		}
+		req = requests.post('https://api.github.com/user/repos', data=json.dumps(data), auth=(skillAuthor, githubToken))
+
+		if req.status_code != 201:
+			raise Exception("Couldn't create the repository on Github")
+
+		subprocess.run(f'git -C {str(skillPath)} init'.split())
+
+		subprocess.run(['git', 'config', '--global', 'user.email', 'githubbot@projectalice.io'])
+		subprocess.run(['git', 'config', '--global', 'user.name', 'githubbot@projectalice.io'])
+
+		remote = f'https://{skillAuthor}:{githubToken}@github.com/{skillAuthor}/skill_{skillName}.git'
+		subprocess.run(['git', '-C', str(skillPath), 'remote', 'add', 'origin', remote])
+
+		subprocess.run(['git', '-C', str(skillPath), 'add', '--all'])
+		subprocess.run(['git', '-C', str(skillPath), 'commit', '-m', '"Initial upload"'])
+		subprocess.run(['git', '-C', str(skillPath), 'push', '--set-upstream', 'origin', 'master'])
+
+		url = f'https://github.com/{skillAuthor}/skill_{skillName}.git'
+		print(f'Skill uploaded! You can find it on {url}')
+		return True
+	except Exception as e:
+		print(f'Something went wrong uploading the skill on Github: {e}')
+		return False
 
 
 @click.command()
