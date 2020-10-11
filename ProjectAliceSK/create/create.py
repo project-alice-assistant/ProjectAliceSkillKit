@@ -446,7 +446,7 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 		subprocess.run(['git', '-C', str(skillPath), 'remote', 'add', 'origin', remote])
 
 		subprocess.run(['git', '-C', str(skillPath), 'add', '--all'])
-		subprocess.run(['git', '-C', str(skillPath), 'commit', '-m', '"Initial upload"'])
+		subprocess.run(['git', '-C', str(skillPath), 'commit', '-m', '"Initial upload by Project Alice Skill Kit"'])
 		subprocess.run(['git', '-C', str(skillPath), 'push', '--set-upstream', 'origin', 'master'])
 
 		url = f'https://github.com/{skillAuthor}/skill_{skillName}.git'
