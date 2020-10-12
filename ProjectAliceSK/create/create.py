@@ -33,6 +33,7 @@ class SkillCreator:
 
 		self.generalQuestions()
 		self.createDestinationFolder()
+		self.createBaseFiles()
 		self.createInstructions()
 		self.createDialogTemplates()
 		self.createTalks()
@@ -216,6 +217,24 @@ class SkillCreator:
 		                        langs=self._general['langs']
 		                        )
 		print('----------------------------\n')
+
+
+	def createBaseFiles(self):
+		print('Creating base files')
+		self.createTemplateFile(
+			outputPath=self._skillPath / '.gitignore',
+			templateFile='.gitignore.j2'
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / 'LICENSE',
+			templateFile='LICENSE.j2'
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / '.gitlab-ci.yml',
+			templateFile='.gitlab-ci.yml.j2'
+		)
 
 
 	def createInstructions(self):
