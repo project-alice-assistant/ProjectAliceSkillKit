@@ -12,6 +12,7 @@ import requests
 from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 
 
+# noinspection PyShadowingNames
 class SkillCreator:
 
 	def __init__(self):
@@ -32,18 +33,19 @@ class SkillCreator:
 
 		self.generalQuestions()
 		self.createDestinationFolder()
-		self.createInstallFile()
+		self.createInstructions()
 		self.createDialogTemplates()
 		self.createTalks()
+		self.createInstallFile()
 		self.createReadme()
 		self.createWidgets()
 		self.createScenarioNodes()
 		self.uploadGithub()
 
-		print('----------------------------\n')
+		print('\n----------------------------')
 		print('All done!')
-		print(f"You can now start creating your skill. You will find the main class in {Path(self._skillPath, self._general['skillName']).with_suffix('.py')}")
-		print('\nRemember to edit the dialogTemplate/XYZ.json and remove the dummy data!!\n')
+		print(f"You can now start creating your skill. You will find your skill in {Path(self._skillPath)}")
+		print('\nRemember to edit the generated files to remove the dummy data!!\n')
 		print('Thank you for creating for Project Alice')
 
 
@@ -159,6 +161,7 @@ class SkillCreator:
 				break
 			sysreqs.append(subAnswers['sysreq'])
 
+		print('\n----------------------------')
 		print('Creating install file')
 		langs = ','.join([f'\n\t\t\t"{lang}"' for lang in self._general['langs']])
 		if langs:
@@ -183,7 +186,7 @@ class SkillCreator:
 
 
 	def createDialogTemplates(self):
-		print('Creating dialog template(s)')
+		print('Creating dialog templates')
 		for lang in self._general['langs']:
 			print(f'- {lang}')
 			self.createTemplateFile(f'dialogTemplate/{lang}.json', 'dialog.json.j2',
@@ -193,10 +196,12 @@ class SkillCreator:
 
 
 	def createTalks(self):
-		print('Creating talks')
+		print('Creating talk files')
 		for lang in self._general['langs']:
 			print(f'- {lang}')
 			self.createTemplateFile(f'talks/{lang}.json', 'talks.json.j2')
+
+		print('----------------------------\n')
 
 
 	def createReadme(self):
@@ -210,6 +215,20 @@ class SkillCreator:
 		                        username=self._general['username'],
 		                        langs=self._general['langs']
 		                        )
+		print('----------------------------\n')
+
+
+	def createInstructions(self):
+		if not self._general['createInstructions']:
+			return
+
+		print('Creating instruction files')
+		self.createDirectories(['instructions'])
+		files = list()
+		for lang in self._general['langs']:
+			print(f'- {lang}')
+			files.append(f'instructions/{lang}.md')
+		self.createFiles(files)
 
 
 	def createWidgets(self):
@@ -367,7 +386,7 @@ FIRST_QUESTION = [
 		'name'    : 'username',
 		'message' : 'Please enter your Github user name',
 		'validate': NotEmpty,
-		'filter'  : lambda val: str(val).capitalize().replace(' ', '')
+		'filter'  : lambda val: str(val).replace(' ', '')
 	},
 	{
 		'type'    : 'input',
@@ -415,7 +434,13 @@ NEXT_QUESTION = [
 				'name': 'kr'
 			},
 		]
-	}
+	},
+	{
+		'type'   : 'confirm',
+		'name'   : 'createInstructions',
+		'message': 'Would you like to create instructions for your skill?\nInstructions display on the interface and let users know how to use your skill.',
+		'default': False
+	},
 ]
 
 
