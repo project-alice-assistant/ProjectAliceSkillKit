@@ -106,15 +106,9 @@ class SkillCreator:
 
 		self.createDirectories([
 			'dialogTemplate',
-			'talks'
+			'talks',
+			'.github/workflows',
 		])
-
-		print('Creating python class')
-		self.createTemplateFile(f"{self._general['skillName']}.py", 'skill.py.j2',
-		                        skillName=self._general['skillName'],
-		                        description=self._general['description'],
-		                        username=self._general['username']
-		                        )
 
 
 	def createInstallFile(self):
@@ -220,6 +214,13 @@ class SkillCreator:
 
 
 	def createBaseFiles(self):
+		print('Creating python main class')
+		self.createTemplateFile(f"{self._general['skillName']}.py", 'skill.py.j2',
+		                        skillName=self._general['skillName'],
+		                        description=self._general['description'],
+		                        username=self._general['username']
+		                        )
+
 		print('Creating base files')
 		self.createTemplateFile(
 			outputPath=self._skillPath / '.gitignore',
@@ -234,6 +235,32 @@ class SkillCreator:
 		self.createTemplateFile(
 			outputPath=self._skillPath / '.gitlab-ci.yml',
 			templateFile='.gitlab-ci.yml.j2'
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / 'mypy.ini',
+			templateFile='mypy.ini'
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / 'sonar-project.properties',
+			templateFile='sonar-project.properties.j2',
+			skillName=self._general['skillName']
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / '.editorconfig',
+			templateFile='.editorconfig'
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / '/.github/workflows/tests.yml',
+			templateFile='tests.yml'
+		)
+
+		self.createTemplateFile(
+			outputPath=self._skillPath / '/.github/PULL_REQUEST_TEMPLATE.md',
+			templateFile='PULL_REQUEST_TEMPLATE.md'
 		)
 
 
