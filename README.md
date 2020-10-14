@@ -2,8 +2,6 @@
 
 The Project Alice skill kit is a tool that helps creating skills for Alice.
 
-It was formerly written by [maxbachmann](https://github.com/maxbachmann)
-
 ## Features
 - Create new skills
 - Validate the format of all json files
@@ -30,9 +28,13 @@ Further information on the validation tests can be found [here](https://github.c
 
 
 ## Auto skills creation
-To create the basic files needed for a skill to work run:
+To create the basic files needed for a skill to work, run:
 
 ```bash
 projectalice-sk create
 ```
 This saves you the hassle of creating the directory tree, the required files and so on. It also follows the strict conventions we made for skills and will avoid you trouble when submitting your skill for review.
+
+
+## Contributors:
+- [maxbachmann](https://github.com/maxbachmann)

@@ -12,15 +12,26 @@ import requests
 from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 
 
+class SkillCreationFailed(Exception):
+	def __init__(self, msg: str):
+		super().__init__(msg)
+
+
 # noinspection PyShadowingNames
 class SkillCreator:
 
-	def __init__(self):
+	SEPARATOR = '\n----------------------------\n'
+
+	def __init__(self, fromFile: Path = None):
 		self._skillPath = None
 		self._general = None
+		self._fromFile = fromFile
 
 
 	def start(self):
+		if self._fromFile:
+			return self.createFromFile()
+
 		print(' _____ _    _ _ _   _   ___ _   ')
 		print('/  ___| |  (_) | | | | / (_) |  ')
 		print('\ `--.| | ___| | | | |/ / _| |_ ')
@@ -43,11 +54,65 @@ class SkillCreator:
 		self.createScenarioNodes()
 		self.uploadGithub()
 
-		print('\n----------------------------')
+		print(self.SEPARATOR)
 		print('All done!')
 		print(f"You can now start creating your skill. You will find your skill in {Path(self._skillPath)}")
 		print('\nRemember to edit the generated files to remove the dummy data!!\n')
 		print('Thank you for creating for Project Alice')
+
+
+	def createFromFile(self) -> bool:
+		if not self._fromFile.exists():
+			raise SkillCreationFailed('Data file not found')
+
+		data = json.loads(self._fromFile.read_text())
+
+		try:
+			self._general['username'] = data['username'],
+			self._general['skillName'] = data['skillName'],
+			self._general['category'] = data['category'],
+			self._general['description'] = data['description']
+			self._general['githubToken'] = data['githubToken']
+			self._general['langs'] = data['langs']
+			self._general['createInstructions'] = data['createInstructions']
+
+			self._skillPath = Path.home() / 'ProjectAliceSkillKit' / self._general['username'] / self._general['skillName']
+			shutil.rmtree(self._skillPath, ignore_errors=True)
+
+			self.createDestinationFolder()
+			self.createBaseFiles()
+			self.createInstructions()
+			self.createDialogTemplates()
+			self.createTalks()
+
+			install = {
+				'name'              : self._general['skillName'],
+				'version'           : '0.0.1',
+				'icon'              : 'fab fa-battle-net',
+				'category'          : self._general['category'],
+				'author'            : self._general['username'],
+				'maintainers'       : [],
+				'desc'              : self._general['description'],
+				'aliceMinVersion'   : '1.0.0-b3',
+				'pipRequirements'   : data['pipreq'],
+				'systemRequirements': data['sysreq'],
+				'conditions'        : data['conditions']
+			}
+
+			# Make file nicer
+			installFile = Path(self._skillPath, f'{self._general["skillName"]}.install')
+			installFile.write_text(json.dumps(install, ensure_ascii=False, indent=4))
+
+			self.createReadme()
+			self.makeWidgets(data['widgets'])
+			self.makeScenarioNodes(data['scenarioNodes'])
+
+			shutil.move(self._skillPath, Path(data['outputDestination']))
+
+		except Exception as e:
+			raise SkillCreationFailed(str(e))
+
+		return True
 
 
 	def generalQuestions(self):
@@ -76,7 +141,7 @@ class SkillCreator:
 			if subAnswers['delete']:
 				shutil.rmtree(path=self._skillPath)
 			else:
-				self._skillPath = Path.home() / 'ProjectAliceSkillKit' / answers['username'] / subAnswers['skillName']
+				self._skillPath = Path.home() / 'ProjectAlice/skills/' / subAnswers['skillName']
 				answers['skillName'] = subAnswers['skillName']
 
 		subAnswers = prompt(NEXT_QUESTION, style=STYLE)
@@ -90,10 +155,12 @@ class SkillCreator:
 		(self._skillPath / outputPath).write_text(template.render(**kwargs))
 
 
-	def createDirectories(self, directories: list):
+	def createDirectories(self, directories: list, isRelative: bool = True):
 		for directory in directories:
-			(self._skillPath / directory).mkdir(parents=True, exist_ok=True)
-
+			if isRelative:
+				(self._skillPath / directory).mkdir(parents=True, exist_ok=True)
+			else:
+				directory.mkdir(parents=True, exist_ok=True)
 
 	def createFiles(self, files: list):
 		for file in files:
@@ -101,21 +168,40 @@ class SkillCreator:
 
 
 	def createDestinationFolder(self):
-		print('\n----------------------------')
+		print(self.SEPARATOR)
 		print('Creating destination folders')
 
 		self.createDirectories([
 			'dialogTemplate',
-			'talks',
-			'.github/workflows',
+			'talks'
 		])
+
+		self.createDirectories([
+			Path(self._skillPath, '.github/workflows')
+		], False)
 
 
 	def createInstallFile(self):
+		questions = [
+			{
+				'type'   : 'confirm',
+				'name'   : 'isOnline',
+				'message': 'Does your skill need internet connectivity?',
+				'default': False
+			},
+			{
+				'type'   : 'confirm',
+				'name'   : 'arbitraryCapture',
+				'message': 'Does your skill need the ASR to capture arbitrary text?',
+				'default': False
+			}
+		]
+
+		answers = prompt(questions, style=STYLE)
+
 		reqs = list()
 		while True:
-			questions = [
-				{
+			questions = [{
 					'type'   : 'confirm',
 					'name'   : 'requirements',
 					'message': 'Do you want to add python pip requirements?',
@@ -156,28 +242,84 @@ class SkillCreator:
 				break
 			sysreqs.append(subAnswers['sysreq'])
 
-		print('\n----------------------------')
+		neededSkills = list()
+		while True:
+			questions = [
+				{
+					'type'   : 'confirm',
+					'name'   : 'neededSkills',
+					'message': 'Are there any skills that are REQUIRED for yours to run?' if not neededSkills else 'Any other?',
+					'default': False
+				},
+				{
+					'type'    : 'input',
+					'name'    : 'skills',
+					'message' : 'Enter the skill name or `stop` to cancel',
+					'validate': NotEmpty,
+					'when'    : lambda subAnswers: subAnswers['neededSkills']
+				}
+			]
+			subAnswers = prompt(questions, style=STYLE)
+			if not subAnswers['neededSkills'] or subAnswers['skills'] == 'stop':
+				break
+			neededSkills.append(subAnswers['skills'])
+
+		conflictingSkills = list()
+		while True:
+			questions = [
+				{
+					'type'   : 'confirm',
+					'name'   : 'conflictingSkills',
+					'message': 'Are there any skills that are CONFLICTING with yours?' if not conflictingSkills else 'Any other?',
+					'default': False
+				},
+				{
+					'type'    : 'input',
+					'name'    : 'conflictSkills',
+					'message' : 'Enter the skill name or `stop` to cancel',
+					'validate': NotEmpty,
+					'when'    : lambda subAnswers: subAnswers['conflictingSkills']
+				}
+			]
+			subAnswers = prompt(questions, style=STYLE)
+			if not subAnswers['conflictingSkills'] or subAnswers['conflictSkills'] == 'stop':
+				break
+			conflictingSkills.append(subAnswers['conflictSkills'])
+
+		conditions = dict()
+		conditions['lang'] = self._general['langs']
+		if answers['isOnline']:
+			conditions['online'] = answers['isOnline']
+
+		if answers['arbitraryCapture']:
+			conditions['asrArbitraryCapture'] = answers['arbitraryCapture']
+
+		if neededSkills:
+			conditions['skill'] = neededSkills
+
+		if conflictingSkills:
+			conditions['notSkill'] = conflictingSkills
+
+		print(self.SEPARATOR)
 		print('Creating install file')
-		langs = ','.join([f'\n\t\t\t"{lang}"' for lang in self._general['langs']])
-		if langs:
-			langs += '\n\t\t'
 
-		pipRequirements = ','.join([f'\n\t\t"{req}"' for req in reqs])
-		if pipRequirements:
-			pipRequirements += '\n\t'
+		install = {
+			'name': self._general['skillName'],
+			'version': '0.0.1',
+			'icon': 'fab fa-battle-net',
+			'category': self._general['category'],
+			'author': self._general['username'],
+			'maintainers': [],
+			'desc': self._general['description'],
+			'aliceMinVersion': '1.0.0-b3',
+			'pipRequirements': reqs,
+			'systemRequirements': sysreqs,
+			'conditions': conditions
+		}
 
-		systemRequirements = ','.join([f'\n\t\t"{req}"' for req in sysreqs])
-		if systemRequirements:
-			systemRequirements += '\n\t'
-
-		self.createTemplateFile(f"{self._general['skillName']}.install", 'install.j2',
-		                        skillName=self._general['skillName'],
-		                        description=self._general['description'],
-		                        username=self._general['username'],
-		                        langs=self._general['langs'],
-		                        pipRequirements=reqs,
-		                        systemRequirements=sysreqs
-		                        )
+		# Make file nicer
+		installFile = Path(self._skillPath, f'{self._general["skillName"]}.install')
+		installFile.write_text(json.dumps(install, ensure_ascii=False, indent=4))
 
 
 	def createDialogTemplates(self):
@@ -196,7 +338,7 @@ class SkillCreator:
 			print(f'- {lang}')
 			self.createTemplateFile(f'talks/{lang}.json', 'talks.json.j2')
 
-		print('----------------------------\n')
+		print(self.SEPARATOR)
 
 
 	def createReadme(self):
@@ -210,7 +352,7 @@ class SkillCreator:
 		                        username=self._general['username'],
 		                        langs=self._general['langs']
 		                        )
-		print('----------------------------\n')
+		print(self.SEPARATOR)
 
 
 	def createBaseFiles(self):
@@ -254,12 +396,12 @@ class SkillCreator:
 		)
 
 		self.createTemplateFile(
-			outputPath=self._skillPath / '/.github/workflows/tests.yml',
-			templateFile='tests.yml'
+			outputPath=Path(self._skillPath, '.github/workflows/tests.yml'),
+			templateFile='tests.yml.j2'
 		)
 
 		self.createTemplateFile(
-			outputPath=self._skillPath / '/.github/PULL_REQUEST_TEMPLATE.md',
+			outputPath=Path(self._skillPath, '.github/PULL_REQUEST_TEMPLATE.md'),
 			templateFile='PULL_REQUEST_TEMPLATE.md'
 		)
 
@@ -303,6 +445,10 @@ class SkillCreator:
 		if not skillWidgets:
 			return
 
+		self.makeWidgets(skillWidgets)
+
+
+	def makeWidgets(self, skillWidgets: list):
 		print('Creating widgets base directories')
 		self.createDirectories([
 			'widgets/css',
@@ -357,6 +503,10 @@ class SkillCreator:
 		if not skillNodes:
 			return
 
+		self.makeScenarioNodes(skillNodes)
+
+
+	def makeScenarioNodes(self, skillNodes: list):
 		print('Creating scenario nodes base directories')
 		self.createDirectories([f'scenarioNodes/locales/{lang}' for lang in self._general['langs']])
 
@@ -408,7 +558,7 @@ class SkillCreator:
 STYLE = style_from_dict({
 	Token.QuestionMark: '#996633 bold',
 	Token.Selected    : '#5F819D bold',
-	Token.Instruction : '#99ff33 bold',
+	Token.Instruction : '#99ff33 bold', #NOSONAR
 	Token.Pointer     : '#673ab7 bold',
 	Token.Answer      : '#0066ff bold',
 	Token.Question    : '#99ff33 bold',
@@ -452,6 +602,13 @@ NEXT_QUESTION = [
 		'filter'  : lambda val: str(val).capitalize()
 	},
 	{
+		'type'   : 'list',
+		'name'   : 'category',
+		'message': 'Please select in which category your skill belongs',
+		'choices': ['weather', 'information', 'entertainment', 'music', 'game', 'kid', 'automation', 'assistance', 'security', 'planning', 'shopping', 'organisation', 'household', 'health'],
+		'filter' : lambda val: val.lower()
+	},
+	{
 		'type'    : 'checkbox',
 		'name'    : 'langs',
 		'message' : 'Choose the language for this skill. Note that to share\nyour skill on the official repo english is mandatory',
@@ -486,7 +643,7 @@ NEXT_QUESTION = [
 		'name'   : 'createInstructions',
 		'message': 'Would you like to create instructions for your skill?\nInstructions display on the interface and let users know how to use your skill.',
 		'default': False
-	},
+	}
 ]
 
 
@@ -529,8 +686,14 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 
 
 @click.command()
-def create():
+@click.option('-f', '--file', default=None, show_default=True, help='Path to a json data file')
+def create(file: Path = None):
 	"""
-	creates a new skill
+	Creates a new skill
 	"""
-	SkillCreator().start()
+	SkillCreator(file).start()
+
+
+if __name__ == '__main__':
+	# pylint: disable=no-value-for-parameter
+	create()

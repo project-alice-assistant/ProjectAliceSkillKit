@@ -2,23 +2,18 @@
 	"name": "{{ skillName }}",
 	"version": "0.0.1",
 	"icon": "fab fa-battle-net",
-	"category": "undefined",
+	"category": "{{ category }}",
 	"author": "{{ username }}",
 	"maintainers": [],
 	"desc": "{{ description }}",
-	"aliceMinVersion": "1.0.0",
+	"aliceMinVersion": "1.0.0-b3",
 	"pipRequirements": [
-	{%- for pipRequirement in pipRequirements %}
+	{% for pipRequirement in pipRequirements %}
 		"{{ pipRequirement }}"{{ "," if not loop.last -}}{{ "\n	" if loop.last }}
-	{%- endfor %}],
+	{% endfor %}],
 	"systemRequirements":  [
-	{%- for systemRequirement in systemRequirements %}
+	{% for systemRequirement in systemRequirements %}
 		"{{ systemRequirement }}"{{ "," if not loop.last -}}{{ "\n	" if loop.last }}
-	{%- endfor %}],
-	"conditions": {
-		"lang": [
-		{%- for lang in langs %}
-			"{{ lang }}"{{ "," if not loop.last -}}{{ "\n		" if loop.last }}
-		{%- endfor %}]
-	}
+	{% endfor %}],
+	"conditions": {{ conditions|safe }}
 }
