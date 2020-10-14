@@ -13,7 +13,8 @@ from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dic
 
 
 class SkillCreationFailed(Exception):
-	def __init__(self, msg: str):
+
+	def __init__(self, msg: Exception):
 		super().__init__(msg)
 
 
@@ -68,13 +69,14 @@ class SkillCreator:
 		data = json.loads(self._fromFile.read_text())
 
 		try:
-			self._general['username'] = data['username'],
-			self._general['skillName'] = data['skillName'],
-			self._general['category'] = data['category'],
-			self._general['description'] = data['description']
-			self._general['githubToken'] = data['githubToken']
-			self._general['langs'] = data['langs']
-			self._general['createInstructions'] = data['createInstructions']
+			self._general = {
+				'username'          : data['username'],
+				'skillName'         : data['skillName'],
+				'category'          : data['category'],
+				'description'       : data['description'],
+				'langs'             : data['langs'],
+				'createInstructions': data['createInstructions']
+			}
 
 			self._skillPath = Path.home() / 'ProjectAliceSkillKit' / self._general['username'] / self._general['skillName']
 			shutil.rmtree(self._skillPath, ignore_errors=True)
@@ -110,7 +112,7 @@ class SkillCreator:
 			shutil.move(self._skillPath, Path(data['outputDestination']))
 
 		except Exception as e:
-			raise SkillCreationFailed(str(e))
+			raise SkillCreationFailed(e)
 
 		return True
 
@@ -687,11 +689,11 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 
 @click.command()
 @click.option('-f', '--file', default=None, show_default=True, help='Path to a json data file')
-def create(file: Path = None):
+def create(file: str = ''):
 	"""
 	Creates a new skill
 	"""
-	SkillCreator(file).start()
+	SkillCreator(Path(file)).start()
 
 
 if __name__ == '__main__':
