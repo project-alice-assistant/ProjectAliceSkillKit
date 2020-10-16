@@ -4,7 +4,10 @@ from typing import Generator
 
 from jsonschema import Draft7Validator, exceptions
 
-from ProjectAliceSK.validate.src.Validation import Validation
+try:
+	from ProjectAliceSK.validate.src.Validation import Validation
+except ModuleNotFoundError:
+	from validate.src.Validation import Validation
 
 
 class InstallValidation(Validation):

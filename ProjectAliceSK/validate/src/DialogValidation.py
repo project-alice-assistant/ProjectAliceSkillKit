@@ -6,8 +6,12 @@ from typing import Generator, Optional, Union
 import requests
 from unidecode import unidecode
 
-from ProjectAliceSK.validate.src.DialogTemplate import DialogTemplate
-from ProjectAliceSK.validate.src.Validation import Validation
+try:
+	from ProjectAliceSK.validate.src.DialogTemplate import DialogTemplate
+	from ProjectAliceSK.validate.src.Validation import Validation
+except ModuleNotFoundError:
+	from validate.src.DialogTemplate import DialogTemplate
+	from validate.src.Validation import Validation
 
 
 class DialogValidation(Validation):

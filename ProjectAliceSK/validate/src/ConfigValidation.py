@@ -2,8 +2,10 @@ import json
 from pathlib import Path
 from typing import Generator, Optional
 
-from ProjectAliceSK.validate.src.Validation import Validation
-
+try:
+	from ProjectAliceSK.validate.src.Validation import Validation
+except ModuleNotFoundError:
+	from validate.src.Validation import Validation
 
 class ConfigValidation(Validation):
 

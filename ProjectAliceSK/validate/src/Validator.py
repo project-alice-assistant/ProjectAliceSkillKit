@@ -2,11 +2,18 @@ from pathlib import Path
 
 import click
 
-from ProjectAliceSK.validate.src.ConfigValidation import ConfigValidation
-from ProjectAliceSK.validate.src.DialogValidation import DialogValidation
-from ProjectAliceSK.validate.src.InstallValidation import InstallValidation
-from ProjectAliceSK.validate.src.TalkValidation import TalkValidation
-from ProjectAliceSK.validate.src.Validation import Validation
+try:
+	from ProjectAliceSK.validate.src.ConfigValidation import ConfigValidation
+	from ProjectAliceSK.validate.src.DialogValidation import DialogValidation
+	from ProjectAliceSK.validate.src.InstallValidation import InstallValidation
+	from ProjectAliceSK.validate.src.TalkValidation import TalkValidation
+	from ProjectAliceSK.validate.src.Validation import Validation
+except ModuleNotFoundError:
+	from validate.src.ConfigValidation import ConfigValidation
+	from validate.src.DialogValidation import DialogValidation
+	from validate.src.InstallValidation import InstallValidation
+	from validate.src.TalkValidation import TalkValidation
+	from validate.src.Validation import Validation
 
 
 class Validator:

@@ -31,7 +31,7 @@ jobs:
         with:
           path: '.'
       - name: Sonarcloud scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@v1.4
         env:
           GITHUB_TOKEN:{% raw %} ${{ secrets.COVERALLS_REPO_TOKEN }}{% endraw %}
           SONAR_TOKEN:{% raw %} ${{ secrets.SONAR_TOKEN }}{% endraw %}

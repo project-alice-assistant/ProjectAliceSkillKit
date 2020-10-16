@@ -5,8 +5,12 @@ from typing import Union
 
 import click
 
-from ProjectAliceSK.util.Helpers import OptionEatAll
-from ProjectAliceSK.validate.src.Validator import Validator
+try:
+	from ProjectAliceSK.util.Helpers import OptionEatAll
+	from ProjectAliceSK.validate.src.Validator import Validator
+except ModuleNotFoundError:
+	from util.Helpers import OptionEatAll
+	from validate.src.Validator import Validator
 
 
 @click.command()
@@ -14,7 +18,7 @@ from ProjectAliceSK.validate.src.Validator import Validator
 @click.option('-v', '--verbose', count=True, help='Verbosity level')
 def validate(paths: Union[str, list], verbose: int):
 	"""
-	Validate Skills
+	Validates skills
 	"""
 	if not paths:
 		paths = [os.getcwd()]
