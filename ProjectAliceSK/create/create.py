@@ -333,6 +333,8 @@ class SkillCreator:
 			                        username=self._general['username']
 			                        )
 
+			self.createTemplateFile(f'dialogTemplate/{lang}.sample', 'sample.json.j2')
+
 
 	def createTalks(self):
 		print('Creating talk files')
