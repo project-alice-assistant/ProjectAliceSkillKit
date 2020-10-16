@@ -1,9 +1,9 @@
 import os
-import subprocess
 import sys
 from pathlib import Path
 
 import click
+import pytest
 
 
 @click.command()
@@ -19,9 +19,8 @@ def unittests(skill: str):
 		sys.exit(0)
 
 	print('Found tests to be run, starting')
-	process: subprocess.CompletedProcess = subprocess.run([str(path), '--cov=./', '--cov-report=xml'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-	ret = 0 if not process.returncode else process.returncode
-	sys.exit(ret)
+	result = pytest.main([str(path), '--cov=./', '--cov-report=xml'])
+	sys.exit(result)
 
 
 if __name__ == '__main__':
