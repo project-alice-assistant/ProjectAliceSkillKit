@@ -20,7 +20,10 @@ def unittests(skill: str):
 
 	print('Found tests to be run, starting')
 	result = pytest.main([str(path), '--cov=./', '--cov-report=xml'])
-	ret = 0 if result.value == 5 else result.value
+	if isinstance(result, int):
+		ret = 0 if result == 5 else result
+	else:
+		ret = 0 if result.value == 5 else result.value
 	sys.exit(ret)
 
 
