@@ -8,7 +8,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='projectalice-sk',
 	author='ProjectAlice',
-	version='1.7.1',
+	version='1.8.0',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
 	description='Project Alice skill kit',
@@ -27,7 +27,11 @@ setup(
 		'requests',
 		'PyInquirer',
 		'prompt_toolkit==1.0.14',
-		'jinja2'
+		'jinja2',
+		'pytest~=5.2.2',
+		'coverage~=4.5.4',
+		'pytest-cov~=2.8.1',
+		'coveralls~=1.8.2'
 	],
 	classifiers=[
 		"Development Status :: 5 - Production/Stable",
