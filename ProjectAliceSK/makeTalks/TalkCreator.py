@@ -62,6 +62,8 @@ class CopyTooTalk:
 		self._skillPath = ""
 		self._parentPath = ""
 		self._allLanguages = ["en", "de", "it", "fr"]
+		self._totalCounter = 0
+		self._repeatOnce = False
 
 
 	# Create a class variable to shut sonar up
@@ -81,8 +83,11 @@ class CopyTooTalk:
 			for position, line in enumerate(fileData.split("\n")):
 				# iterate over the line looking for system and dialog messages
 				for item in self._msgList:
-					if 'self.randomTalk' in line:
-						print(f'Skipping this line as it looks like its already done. {line}')
+					if 'self.randomTalk' in line or 'self.TalkManager' in line or '@' in line:
+						if '@' in line:
+							print(f'Ignoring lines that start with "@" : {line}')
+						else:
+							print(f'Skipping this line as it looks like its already done. {line}')
 						self._newCode = f'{self._newCode}\n{line}'
 						break
 					# if self.logInfo for example is in the line of text
@@ -252,6 +257,7 @@ class CopyTooTalk:
 			writeThisToPYFile2 = line.replace(replaceThisText, withThisText)
 
 			self._newCode = f'{self._newCode}\n{writeThisToPYFile2}'
+			self._totalCounter += 1
 			self._changesMade = True
 
 		# If the line of code has no vars in it
@@ -291,7 +297,7 @@ class CopyTooTalk:
 
 			# Set status of self._changesMade to reflect that there's been modifications
 			self._changesMade = True
-
+			self._totalCounter += 1
 		return textForTalkFile
 
 
@@ -306,6 +312,10 @@ class CopyTooTalk:
 		with open(self._skillPath, 'w') as writer:
 			writer.write(value)
 
+		if not self._repeatOnce:
+			print(f'There was {self._totalCounter} lines modified')
+			self._repeatOnce = True
+
 		self.setupTalkFilePath()
 
 
@@ -315,23 +325,29 @@ class CopyTooTalk:
 
 		if 'all' in self._talkLanguage:
 			# first lets store existing talk data so all files are the same in the end
+			# We do this loop in case the first file read has no data, we need to find the file with data
 			existingTalkData = ""
 			for fileName in self._allLanguages:
 				file = Path(f'{self._parentPath}/talks/{fileName}.json')
 				if not existingTalkData and file.exists():
-					with open(file, 'r+') as file:
-						existingTalkData = json.load(file)
+					with open(file, 'r+') as existingData:
+						existingTalkData = json.load(existingData)
 
 			# now lets check for if the file exists
 			for language in self._allLanguages:
 				file = Path(f'{self._parentPath}/talks/{language}.json')
-				if not file.exists():
+				# let's first update the existingTalkData with whats already in THAT file
+				if file.exists():
+					with open(file, 'r+') as readOnlyFile:
+						existingTalkData = json.load(readOnlyFile)
+				else:
 					# if file didnt exists create it and write the existing Talkdata to it
 					with open(file, 'w+') as tempfile:
 						json.dump(existingTalkData, tempfile)
 				# now lets update the talk file with the new data
 				self.writeToTalkFile(file=file)
 			print('** Advise running the SkillTranslator skill to translate the talks files in the appropriate language **')
+
 		else:
 			# if all is not selected, just work on choosen language file
 			file = Path(f'{self._parentPath}/talks/{self._talkLanguage}.json')
@@ -347,3 +363,4 @@ class CopyTooTalk:
 
 			file.seek(0)
 			json.dump(exisitingTalkData, file, sort_keys=True, ensure_ascii=False, indent='\t')
+
