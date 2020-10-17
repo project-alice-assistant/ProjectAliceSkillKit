@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-
+from ProjectAliceSK.makeTalks import TalkCreator
 import click
 
 
@@ -18,6 +18,9 @@ def makeTalks(skill: str, lang: str):
 		skillPath = Path(path)
 
 	skillPath = skillPath / skill
+
+	copy2talk = TalkCreator.CopyTooTalk()
+	copy2talk.checkForLogInfo(skill=skillPath, language=lang)
 
 
 if __name__ == '__main__':

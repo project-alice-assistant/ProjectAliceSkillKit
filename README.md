@@ -38,3 +38,4 @@ This saves you the hassle of creating the directory tree, the required files and
 
 ## Contributors:
 - [maxbachmann](https://github.com/maxbachmann)
+- lazza
