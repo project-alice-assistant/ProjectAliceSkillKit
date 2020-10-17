@@ -1,7 +1,11 @@
 import os
 from pathlib import Path
-from ProjectAliceSK.makeTalks import TalkCreator
 import click
+
+try:
+	from ProjectAliceSK.makeTalks import TalkCreator
+except:
+	from makeTalks import TalkCreator
 
 
 @click.command()

@@ -1,11 +1,10 @@
-
 import json
 from pathlib import Path
 
 
 class CopyTooTalk:
 	"""
-	Author = Lazza
+	@author Lazza
 
 	This file will scan through each line of a Py file and if it finds a systemLog message or a dialog message
 
@@ -21,27 +20,26 @@ class CopyTooTalk:
 	  of as per above example..
 	  - text=self.randomTalk(text="dialogmessage2", replace=[time])
 
-	  It will then write to the talks file the compatible json format talks dictionary.
+	It will then write to the talks file the compatible json format talks dictionary.
 	It will also substitue {time} for {0} (or {1} etc depending on amount of vars)
 	when writing to the talks file.
 
 	NOTE: When writing to the talks file it "appends"  to any existing json data. So you can then do what you wish
 	with the talks file once written, IE: delete old data, copy over old lines, leave it as it is etc
 
-	**To setup your run configuration in pycharm **
+	** To setup your run configuration in pycharm **
 
-	1. For the script field = point it to TalkCreator.py file
+	1. For the script field = point it to ProjectAliceSkillKit.py file
 	2. For paramaters field = maketalks -s $FilePath$ -l en
-	3. Working directory shoudl automatically be filed when you select the script
-	4. Excecution boxes can all stay unticked
+	3. Working directory should automatically be filed when you select the script
+	4. Check `emulate terminal in output console`
 	5. oh and name it whatever, maybe talkCreator?
+
+	If you omit the language part (-l en) the script will ask you to choose one when running
 
 	**To run**
 
-	Open a skills .py file you want to scan in pycharm. Then "run" "talkCreator"  or whatever you called it
-
-	PS - make sure to set the correct language variable in the configuration paramaters. As per point #2 above
-	it reflects en for english
+	Open a skills .py file you want to scan in pycharm. Then "run" "talkCreator" or whatever you called it
 
 	EG parmeters = maketalks -s $FilePath$ -l en or maketalks -s $FilePath$ -l de etc
 
@@ -63,16 +61,17 @@ class CopyTooTalk:
 		self._talkLanguage = ""
 		self._skillPath = ""
 		self._parentPath = ""
-		self._allLanguages = ["en", "de", "it","fr"]
+		self._allLanguages = ["en", "de", "it", "fr"]
 
-	#Create a class variable to shut sonar up
+
+	# Create a class variable to shut sonar up
 	TEXT_F_STRING = 'text=f'
+
 
 	def checkForLogInfo(self, skill, language):
 		self._talkLanguage = language
 		self._skillPath = skill
 		self._parentPath = Path(self._skillPath).parent
-
 
 		# Open the PY file in read mode
 		with open(self._skillPath, 'r') as reader:
@@ -211,7 +210,7 @@ class CopyTooTalk:
 					[
 						f'{textForTalkFile}'
 					],
-				'short':[
+				'short'  : [
 					""
 				]
 			}
@@ -229,7 +228,7 @@ class CopyTooTalk:
 		if elementsInList > 1 and self._extractedVarsForPYfile:
 			for x in self._extractedVarsForPYfile:
 				cleanValuesFromList = f'{x} {cleanValuesFromList}'
-			#add commas
+			# add commas
 			cleanValuesFromList = cleanValuesFromList.replace(" ", ",", elementsInList - 1)
 
 		elif elementsInList == 1:
@@ -315,7 +314,7 @@ class CopyTooTalk:
 		# create missing talk files if any and set up the paths
 
 		if 'all' in self._talkLanguage:
-			#first lets store existing talk data so all files are the same in the end
+			# first lets store existing talk data so all files are the same in the end
 			existingTalkData = ""
 			for fileName in self._allLanguages:
 				file = Path(f'{self._parentPath}/talks/{fileName}.json')
@@ -323,21 +322,22 @@ class CopyTooTalk:
 					with open(file, 'r+') as file:
 						existingTalkData = json.load(file)
 
-			#now lets check for if the file exists
+			# now lets check for if the file exists
 			for language in self._allLanguages:
 				file = Path(f'{self._parentPath}/talks/{language}.json')
 				if not file.exists():
-					#if file didnt exists create it and write the existing Talkdata to it
+					# if file didnt exists create it and write the existing Talkdata to it
 					with open(file, 'w+') as tempfile:
 						json.dump(existingTalkData, tempfile)
 				# now lets update the talk file with the new data
 				self.writeToTalkFile(file=file)
 			print('** Advise running the SkillTranslator skill to translate the talks files in the appropriate language **')
 		else:
-			#if all is not selected, just work on choosen language file
+			# if all is not selected, just work on choosen language file
 			file = Path(f'{self._parentPath}/talks/{self._talkLanguage}.json')
 
 			self.writeToTalkFile(file=file)
+
 
 	# write to the actual talks folder all the final data
 	def writeToTalkFile(self, file):
@@ -346,4 +346,4 @@ class CopyTooTalk:
 			exisitingTalkData.update(self._finalTalk)
 
 			file.seek(0)
-			json.dump(exisitingTalkData, file, sort_keys=True, ensure_ascii=False, indent=4)
+			json.dump(exisitingTalkData, file, sort_keys=True, ensure_ascii=False, indent='\t')
