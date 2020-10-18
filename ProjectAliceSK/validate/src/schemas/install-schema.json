@@ -14,6 +14,7 @@
 		"aliceMinVersion",
 		"conditions"
 	],
+	"additionalProperties": false,
 	"properties": {
 		"name": {
 			"$id"     : "#/properties/name",
@@ -24,6 +25,16 @@
 				"AliceCore"
 			],
 			"pattern" : "^[A-Z][a-zA-Z0-9]+$"
+		},
+		"readableName": {
+			"$id"     : "#/properties/name",
+			"type"    : "string",
+			"title"   : "Name of the skill in a form a TTS can speak it",
+			"default" : "",
+			"examples": [
+				"Alice core"
+			],
+			"pattern" : "^[A-Z][a-zA-Z0-9 ]+$"
 		},
 		"version": {
 			"$id": "#/properties/version",
