@@ -695,7 +695,9 @@ def create(file: str = ''):
 	"""
 	Creates a new skill
 	"""
-	SkillCreator(Path(file)).start()
+	if file:
+		file = Path(file)
+	SkillCreator(file).start()
 
 
 if __name__ == '__main__':
