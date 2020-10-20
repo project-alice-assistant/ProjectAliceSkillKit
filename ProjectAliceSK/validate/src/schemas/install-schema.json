@@ -16,7 +16,7 @@
 	],
 	"additionalProperties": false,
 	"properties": {
-		"name": {
+		"name"         : {
 			"$id"     : "#/properties/name",
 			"type"    : "string",
 			"title"   : "Name of the skill",
@@ -26,7 +26,7 @@
 			],
 			"pattern" : "^[A-Z][a-zA-Z0-9]+$"
 		},
-		"readableName": {
+		"speakableName": {
 			"$id"     : "#/properties/name",
 			"type"    : "string",
 			"title"   : "Name of the skill in a form a TTS can speak it",
@@ -34,9 +34,9 @@
 			"examples": [
 				"Alice core"
 			],
-			"pattern" : "^[A-Z][a-zA-Z0-9 ]+$"
+			"pattern" : "^[a-zA-Z0-9 ]+$"
 		},
-		"version": {
+		"version"      : {
 			"$id": "#/properties/version",
 			"type": "string",
 			"title": "Version of the skill",
@@ -46,7 +46,7 @@
 			],
 			"pattern": "^[0-9]+.[0-9]+.[0-9]+$"
 		},
-		"icon": {
+		"icon"         : {
 			"$id": "#/properties/icon",
 			"type": "string",
 			"title": "Skill icon",

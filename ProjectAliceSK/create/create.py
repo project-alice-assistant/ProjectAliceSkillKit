@@ -64,7 +64,7 @@ class SkillCreator:
 
 	def createFromFile(self) -> bool:
 		if not self._fromFile.exists():
-			raise SkillCreationFailed('Data file not found')
+			raise SkillCreationFailed(Exception('Data file not found'))
 
 		data = json.loads(self._fromFile.read_text())
 
@@ -72,6 +72,7 @@ class SkillCreator:
 			self._general = {
 				'username'          : data['username'],
 				'skillName'         : data['skillName'],
+				'speakableName'     : data['speakableName'],
 				'category'          : data['category'],
 				'description'       : data['description'],
 				'langs'             : data['langs'],
@@ -89,6 +90,7 @@ class SkillCreator:
 
 			install = {
 				'name'              : self._general['skillName'],
+				'speakableName'     : self._general['speakableName'],
 				'version'           : '0.0.1',
 				'icon'              : 'fab fa-battle-net',
 				'category'          : self._general['category'],
@@ -103,7 +105,7 @@ class SkillCreator:
 
 			# Make file nicer
 			installFile = Path(self._skillPath, f'{self._general["skillName"]}.install')
-			installFile.write_text(json.dumps(install, ensure_ascii=False, indent=4))
+			installFile.write_text(json.dumps(install, ensure_ascii=False, indent='\t'))
 
 			self.createReadme()
 			self.makeWidgets(data['widgets'])
@@ -306,22 +308,23 @@ class SkillCreator:
 		print('Creating install file')
 
 		install = {
-			'name': self._general['skillName'],
-			'version': '0.0.1',
-			'icon': 'fab fa-battle-net',
-			'category': self._general['category'],
-			'author': self._general['username'],
-			'maintainers': [],
-			'desc': self._general['description'],
-			'aliceMinVersion': '1.0.0-b3',
-			'pipRequirements': reqs,
+			'name'              : self._general['skillName'],
+			'speakableName'     : self._general['speakableName'],
+			'version'           : '0.0.1',
+			'icon'              : 'fab fa-battle-net',
+			'category'          : self._general['category'],
+			'author'            : self._general['username'],
+			'maintainers'       : [],
+			'desc'              : self._general['description'],
+			'aliceMinVersion'   : '1.0.0-b3',
+			'pipRequirements'   : reqs,
 			'systemRequirements': sysreqs,
-			'conditions': conditions
+			'conditions'        : conditions
 		}
 
 		# Make file nicer
 		installFile = Path(self._skillPath, f'{self._general["skillName"]}.install')
-		installFile.write_text(json.dumps(install, ensure_ascii=False, indent=4))
+		installFile.write_text(json.dumps(install, ensure_ascii=False, indent='\t'))
 
 
 	def createDialogTemplates(self):
@@ -598,6 +601,12 @@ FIRST_QUESTION = [
 ]
 
 NEXT_QUESTION = [
+	{
+		'type'    : 'input',
+		'name'    : 'speakableName',
+		'message' : 'Please enter the name of the skill in a form that can be spoken',
+		'validate': NotEmpty
+	},
 	{
 		'type'    : 'input',
 		'name'    : 'description',
