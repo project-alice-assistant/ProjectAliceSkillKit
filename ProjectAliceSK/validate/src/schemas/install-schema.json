@@ -184,7 +184,7 @@
 							"en",
 							"de"
 						],
-						"pattern": "^(en)|(de)|(fr)|(it)$"
+						"pattern": "^(en)|(de)|(fr)|(it)|(pl)$"
 					}
 				},
 				"skill": {

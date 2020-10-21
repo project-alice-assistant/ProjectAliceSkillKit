@@ -638,10 +638,13 @@ NEXT_QUESTION = [
 				'name': 'de'
 			},
 			{
-				'name': 'es'
+				'name': 'it'
 			},
 			{
-				'name': 'it'
+				'name': 'pl'
+			},
+			{
+				'name': 'es'
 			},
 			{
 				'name': 'jp'
