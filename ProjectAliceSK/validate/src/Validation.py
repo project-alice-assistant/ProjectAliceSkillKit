@@ -48,12 +48,12 @@ class Validation(ABC):
 		data: dict = dict()
 		try:
 			data = json.loads(file.read_text(encoding='utf-8'))
-		except ValueError as e:
-			self.saveIndentedError(2, f'syntax errors in {file.parent.name}/{file.name}:')
-			self.saveIndentedError(4, f'- {e}')
-			self._error = True
 		except FileNotFoundError:
 			self.saveIndentedError(2, f'Required file {file.parent.name}/{file.name} not found')
+			self._error = True
+		except Exception as e:
+			self.saveIndentedError(2, f'Syntax errors in {file.parent.name}/{file.name}:')
+			self.saveIndentedError(4, f'- {e}')
 			self._error = True
 
 		return data
@@ -78,7 +78,7 @@ class Validation(ABC):
 				errors.append(error.message)
 
 		if errors:
-			self.saveIndentedError(2, f'schema errors in {file.parent.name}/{file.name}:')
+			self.saveIndentedError(2, f'Schema errors in {file.parent.name}/{file.name}:')
 			self.printErrorList(errors, 4)
 
 
