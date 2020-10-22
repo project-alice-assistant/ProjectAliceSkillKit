@@ -8,12 +8,14 @@ try:
 	from ProjectAliceSK.validate.src.InstallValidation import InstallValidation
 	from ProjectAliceSK.validate.src.TalkValidation import TalkValidation
 	from ProjectAliceSK.validate.src.Validation import Validation
+	from ProjectAliceSK.validate.src.SamplesValidation import SamplesValidation
 except ModuleNotFoundError:
 	from validate.src.ConfigValidation import ConfigValidation
 	from validate.src.DialogValidation import DialogValidation
 	from validate.src.InstallValidation import InstallValidation
 	from validate.src.TalkValidation import TalkValidation
 	from validate.src.Validation import Validation
+	from validate.src.SamplesValidation import SamplesValidation
 
 
 class Validator:
@@ -36,6 +38,7 @@ class Validator:
 		installer = InstallValidation()
 		talk = TalkValidation()
 		config = ConfigValidation()
+		samples = SamplesValidation()
 
 		for skillPath in self._skillPaths:
 			skill = Path(skillPath).resolve()
@@ -47,19 +50,22 @@ class Validator:
 			installer.reset(skill)
 			talk.reset(skill)
 			config.reset(skill)
+			samples.reset(skill)
 
 			dialog.validate(self._verbosity)
 			installer.validate()
 			talk.validate()
 			config.validate()
+			samples.validate()
 
-			if dialog.errorCode or installer.errorCode or talk.errorCode:
+			if dialog.errorCode or installer.errorCode or talk.errorCode or samples.errorCode:
 				err = 1
 				self.indentPrint(0, click.style(f'{skill.name}', fg='red', bold=True), 'invalid')
 				self.printErrors('Installer', installer)
 				self.printErrors('Dialog files', dialog)
 				self.printErrors('Talk files', talk)
 				self.printErrors('Config file', config)
+				self.printErrors('Sample files', samples)
 				self.indentPrint(0)
 			else:
 				self.indentPrint(0, click.style(f'{skill.name}', fg='green', bold=True), 'valid')

@@ -1,0 +1,15 @@
+{
+	"type" : "array",
+	"title": "A list of samples of how your skill is commonly called into action",
+	"items": {
+		"$id"     : "#/properties/maintainers/items",
+		"type"    : "string",
+		"title"   : "Sample sentence",
+		"default" : "",
+		"examples": [
+			"Sample 1",
+			"Sample 2"
+		],
+		"maxItems": 10
+	}
+}
