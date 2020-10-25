@@ -456,6 +456,9 @@ class SkillCreator:
 
 
 	def makeWidgets(self, skillWidgets: list):
+		if not skillWidgets:
+			return
+
 		print('Creating widgets base directories')
 		self.createDirectories([
 			'widgets/css',
@@ -514,6 +517,9 @@ class SkillCreator:
 
 
 	def makeScenarioNodes(self, skillNodes: list):
+		if not skillNodes:
+			return
+
 		print('Creating scenario nodes base directories')
 		self.createDirectories([f'scenarioNodes/locales/{lang}' for lang in self._general['langs']])
 
