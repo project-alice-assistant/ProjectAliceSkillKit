@@ -530,7 +530,8 @@ class SkillCreator:
 			self.createTemplateFile(f'scenarioNodes/{nodeName}.html', 'nodes/node.html.j2', nodeName=nodeName, skillName=self._general['skillName'])
 
 			for lang in self._general['langs']:
-				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.js', 'nodes/locales.json.j2', nodeName=nodeName)
+				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.json', 'nodes/locales.json.j2',
+										nodeName=nodeName)
 
 
 	def uploadGithub(self):
