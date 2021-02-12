@@ -53,6 +53,7 @@ class SkillCreator:
 		self.createReadme()
 		self.createWidgets()
 		self.createScenarioNodes()
+		self.createDevices()
 		self.uploadGithub()
 
 		print(self.SEPARATOR)
@@ -97,7 +98,7 @@ class SkillCreator:
 				'author'            : self._general['username'],
 				'maintainers'       : [],
 				'desc'              : self._general['description'],
-				'aliceMinVersion'   : '1.0.0-b3',
+				'aliceMinVersion'   : '1.0.0-b5',
 				'pipRequirements'   : data['pipreq'],
 				'systemRequirements': data['sysreq'],
 				'conditions'        : data['conditions']
@@ -108,8 +109,9 @@ class SkillCreator:
 			installFile.write_text(json.dumps(install, ensure_ascii=False, indent='\t'))
 
 			self.createReadme()
-			self.makeWidgets(data['widgets'])
-			self.makeScenarioNodes(data['scenarioNodes'])
+			self.makeWidgets(data.get('widgets', list()))
+			self.makeScenarioNodes(data.get('scenarioNodes', list()))
+			self.makeDevices(data.get('devices', list()))
 
 			shutil.move(self._skillPath, Path(data['outputDestination']))
 
@@ -426,6 +428,56 @@ class SkillCreator:
 		self.createFiles(files)
 
 
+	def createDevices(self):
+		skillDevices = []
+		while True:
+			questions = [
+				{
+					'type'   : 'confirm',
+					'name'   : 'devices',
+					'message': 'Are you planning on creating devices for your skill?' if not skillDevices else 'Any other devices?',
+					'default': False
+				},
+				{
+					'type'    : 'input',
+					'name'    : 'device',
+					'message' : 'Enter the name of the device',
+					'validate': NotEmpty,
+					'when'    : lambda subAnswers: subAnswers['devices']
+				}
+			]
+			subAnswers = prompt(questions, style=STYLE)
+			if not subAnswers['devices'] or subAnswers['device'] == 'stop':
+				break
+			skillDevices.append(subAnswers['device'])
+
+		if not skillDevices:
+			return
+
+		self.makeDevices(skillDevices)
+
+
+	def makeDevices(self, skillDevices: list):
+		if not skillDevices:
+			return
+
+		print('Creating devices base directories')
+		self.createDirectories([
+			'devices/img'
+		])
+
+		print('Creating devices files')
+		self.createFiles([
+			'devices/__init__.py',
+			'widgets/img/.gitkeep',
+		])
+
+		for device in skillDevices:
+			device = toPascalCase(device, True)
+			self.createTemplateFile(f'devices/{device}.py', 'devices/device.py.j2', device=device)
+			self.createTemplateFile(f'devices/{device}.config.template', 'devices/device.config.template.j2')
+
+
 	def createWidgets(self):
 		skillWidgets = []
 		while True:
@@ -433,7 +485,7 @@ class SkillCreator:
 				{
 					'type'   : 'confirm',
 					'name'   : 'widgets',
-					'message': 'Are you planning on creating widgets for you skill? Widgets are used on the\ninterface to display quick informations that your skill can return' if not skillWidgets else 'Any other widgets?',
+					'message': 'Are you planning on creating widgets for your skill? Widgets are used on the\ninterface to display quick informations that your skill can return' if not skillWidgets else 'Any other widgets?',
 					'default': False
 				},
 				{
@@ -472,7 +524,6 @@ class SkillCreator:
 		print('Creating widgets files')
 		self.createFiles([
 			'widgets/__init__.py',
-			'widgets/css/common.css',
 			'widgets/img/.gitkeep',
 			'widgets/fonts/.gitkeep'
 		])
@@ -480,8 +531,8 @@ class SkillCreator:
 		for widget in skillWidgets:
 			widget = str(widget).title().replace(' ', '')
 			self.createTemplateFile(f'widgets/css/{widget}.css', 'widget.css.j2', widgetName=widget)
-			self.createTemplateFile(f'widgets/js/{widget}.js', 'widget.js.j2')
-			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widget.html.j2', widget=widget)
+			self.createTemplateFile(f'widgets/js/{widget}.js', 'widget.js.j2', widget=widget, skill=self._skillPath.stem)
+			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widget.html.j2', widget=widget, skill=self._skillPath.stem)
 			self.createTemplateFile(f'widgets/{widget}.py', 'widget.py.j2', widget=widget)
 			(self._skillPath / f'widgets/lang/{widget}.lang.json').write_text('{}')
 
@@ -668,6 +719,14 @@ NEXT_QUESTION = [
 		'default': False
 	}
 ]
+
+
+def toPascalCase(theString: str, replaceSepCharacters: bool = False, sepCharacters: tuple = None) -> str:
+	if replaceSepCharacters:
+		for char in sepCharacters or ('-', '_'):
+			theString = theString.replace(char, ' ')
+
+	return ''.join(x.capitalize() for x in theString.split(' '))
 
 
 def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skillPath: Path, skillDesc: str) -> bool:

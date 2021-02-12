@@ -1,12 +1,13 @@
 import sqlite3
-from core.base.model.Widget import Widget
-from core.base.model.Widget import WidgetSizes
+
+from core.webui.model.Widget import Widget
+from core.webui.model.WidgetSizes import WidgetSizes
 
 
 class {{ widget }}(Widget):
 
-	SIZE = WidgetSizes.w_small
-	OPTIONS = dict()
+	DEFAULT_SIZE = WidgetSizes.w_small
+	DEFAULT_OPTIONS: dict = dict()
 
 	def __init__(self, data: sqlite3.Row):
 		super().__init__(data)
