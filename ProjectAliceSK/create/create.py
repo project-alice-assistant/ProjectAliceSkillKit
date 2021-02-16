@@ -514,7 +514,6 @@ class SkillCreator:
 		print('Creating widgets base directories')
 		self.createDirectories([
 			'widgets/css',
-			'widgets/fonts',
 			'widgets/img',
 			'widgets/js',
 			'widgets/lang',
@@ -524,16 +523,15 @@ class SkillCreator:
 		print('Creating widgets files')
 		self.createFiles([
 			'widgets/__init__.py',
-			'widgets/img/.gitkeep',
-			'widgets/fonts/.gitkeep'
+			'widgets/img/.gitkeep'
 		])
 
 		for widget in skillWidgets:
 			widget = str(widget).title().replace(' ', '')
-			self.createTemplateFile(f'widgets/css/{widget}.css', 'widget.css.j2', widgetName=widget)
-			self.createTemplateFile(f'widgets/js/{widget}.js', 'widget.js.j2', widget=widget, skill=self._skillPath.stem)
-			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widget.html.j2', widget=widget, skill=self._skillPath.stem)
-			self.createTemplateFile(f'widgets/{widget}.py', 'widget.py.j2', widget=widget)
+			self.createTemplateFile(f'widgets/css/{widget}.css', 'widgets/widget.css.j2', widgetName=widget)
+			self.createTemplateFile(f'widgets/js/{widget}.js', 'widgets/widget.js.j2', widget=widget, skill=self._skillPath.stem)
+			self.createTemplateFile(f'widgets/templates/{widget}.html', 'widgets/widget.html.j2', widget=widget, skill=self._skillPath.stem)
+			self.createTemplateFile(f'widgets/{widget}.py', 'widgets/widget.py.j2', widget=widget)
 			(self._skillPath / f'widgets/lang/{widget}.lang.json').write_text('{}')
 
 
