@@ -28,7 +28,6 @@ class TalkValidation(Validation):
 			if errors:
 				self.saveIndentedError(2, f'missing types in {file.parent.name}/{file.name}:')
 				self.printErrorList(errors, 4)
-				self._error = True
 
 
 	def loadFiles(self):
