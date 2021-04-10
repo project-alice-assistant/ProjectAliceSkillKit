@@ -24,10 +24,11 @@ class TalkValidation(Validation):
 	def validateTypes(self):
 		# check whether the same slots appear in all files
 		for file in self.jsonFiles:
-			errors = [talkType for talkType in self._files['en'] if talkType not in self._files[file.stem]]
-			if errors:
-				self.saveIndentedError(2, f'missing types in {file.parent.name}/{file.name}:')
-				self.printErrorList(errors, 4)
+			warnings = [talkType for talkType in self._files['en'] if talkType not in self._files[file.stem]]
+			if warnings:
+				self.saveIndentedWarning(2, f'Missing translations in {file.parent.name}/{file.name}:')
+				self.printWarningList(warnings, 4)
+				self._warning = True
 
 
 	def loadFiles(self):

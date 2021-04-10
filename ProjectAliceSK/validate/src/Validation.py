@@ -13,14 +13,18 @@ class Validation(ABC):
 		self._dirPath = Path(__file__).resolve().parent
 		self._basePath = self._dirPath.parent.parent.parent
 		self._error = False
+		self._warning = False
 		self._files = dict()
 		self.errors = ''
+		self.warnings = ''
 
 
 	def reset(self, skillPath: Path):
 		self._skillPath = skillPath
 		self._error = False
+		self._warning = False
 		self.errors = ''
+		self.warnings = ''
 
 
 	@property
@@ -28,8 +32,17 @@ class Validation(ABC):
 		return self._error
 
 
+	@property
+	def warning(self) -> bool:
+		return self._warning
+
+
 	def saveIndentedError(self, indent: int, *args):
 		self.errors += ' ' * indent + ' '.join(map(str, args)) + '\n'
+
+
+	def saveIndentedWarning(self, indent: int, *args):
+		self.warnings += ' ' * indent + ' '.join(map(str, args)) + '\n'
 
 
 	@property
@@ -64,6 +77,13 @@ class Validation(ABC):
 			for error in errorList:
 				self.saveIndentedError(indent, '-', error)
 			self.saveIndentedError(0)
+
+
+	def printWarningList(self, warningList: list, indent: int = 0):
+		if warningList:
+			for warning in warningList:
+				self.saveIndentedWarning(indent, '-', warning)
+			self.saveIndentedWarning(0)
 
 
 	def validateJsonSchema(self, file: Path):

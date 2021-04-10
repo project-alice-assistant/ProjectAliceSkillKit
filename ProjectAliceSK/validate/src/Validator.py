@@ -67,6 +67,14 @@ class Validator:
 				self.printErrors('Config file', config)
 				self.printErrors('Sample files', samples)
 				self.indentPrint(0)
+			elif dialog.warning or installer.warning or talk.warning or samples.warning:
+				self.indentPrint(0, click.style(f'{skill.name}', fg='yellow', bold=True), 'warning')
+				self.printWarnings('Installer', installer)
+				self.printWarnings('Dialog files', dialog)
+				self.printWarnings('Talk files', talk)
+				self.printWarnings('Config file', config)
+				self.printWarnings('Sample files', samples)
+				self.indentPrint(0)
 			else:
 				self.indentPrint(0, click.style(f'{skill.name}', fg='green', bold=True), 'valid')
 
@@ -77,5 +85,13 @@ class Validator:
 		if validation.errorCode:
 			self.indentPrint(2, click.style(f'{name}:', bold=True))
 			click.echo(validation.errors)
+		else:
+			self.indentPrint(2, click.style(name, bold=True), 'valid')
+
+
+	def printWarnings(self, name: str, validation: Validation):
+		if validation.warning:
+			self.indentPrint(2, click.style(f'{name}:', bold=True))
+			click.echo(validation.warnings)
 		else:
 			self.indentPrint(2, click.style(name, bold=True), 'valid')
