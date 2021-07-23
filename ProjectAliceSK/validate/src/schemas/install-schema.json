@@ -77,7 +77,7 @@
 				"household",
 				"health"
 			],
-			"pattern": "^(?i)(alice|weather|information|entertainment|music|game|kid|automation|assistance|security|planning|shopping|organisation|household|health|undefined)$"
+			"pattern": "^(?i)(alice|weather|information|entertainment|music|game|kid|automation|assistance|security|planning|shopping|organisation|robotics|household|health|undefined)$"
 		},
 		"author": {
 			"$id": "#/properties/author",
@@ -176,15 +176,15 @@
 					"type": "array",
 					"title": "List of supported languages for this skill",
 					"items": {
-						"$id": "#/properties/conditions/properties/lang/items",
-						"type": "string",
-						"title": "Language code",
-						"default": "",
+						"$id"     : "#/properties/conditions/properties/lang/items",
+						"type"    : "string",
+						"title"   : "Language code",
+						"default" : "",
 						"examples": [
 							"en",
 							"de"
 						],
-						"pattern": "^(en)|(de)|(fr)|(it)|(pl)$"
+						"pattern" : "^(en)|(de)|(fr)|(it)|(pl)|(pt)|(pt_br)|(es)$"
 					}
 				},
 				"skill": {
