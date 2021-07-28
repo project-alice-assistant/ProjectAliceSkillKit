@@ -1,15 +1,60 @@
-from __future__ import print_function, unicode_literals
+#  Copyright (c) 2021
+#
+#  This file, create.py, is part of Project Alice.
+#
+#  Project Alice is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>
+#
+#  Last modified: 2021.07.28 at 16:35:11 CEST
 
-import json
-import os
-import shutil
-import subprocess
-from pathlib import Path
+#  Copyright (c) 2021
+#
+#  This file, create.py, is part of Project Alice.
+#
+#  Project Alice is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>
+#
+#  Last modified: 2021.04.13 at 12:49:04 CEST
+
+#  This file, create.py, is part of Project Alice.
+#
+#
+#
+#
+#  Last modified: 2021/2/16 9:44
+#  Last modified by: Psycho
+
+from __future__ import print_function, unicode_literals
 
 import click
 import jinja2
+import json
+import os
 import requests
+import shutil
+import subprocess
 from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
+from pathlib import Path
 
 
 class SkillCreationFailed(Exception):
