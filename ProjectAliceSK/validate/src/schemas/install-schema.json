@@ -16,25 +16,31 @@
 	],
 	"additionalProperties": false,
 	"properties": {
-		"name"         : {
-			"$id"     : "#/properties/name",
-			"type"    : "string",
-			"title"   : "Name of the skill",
-			"default" : "",
-			"examples": [
-				"AliceCore"
-			],
-			"pattern" : "^[A-Z][a-zA-Z0-9]+$"
-		},
+	  "rebootAfterInstall": {
+		"$id": "#/properties/rebootAfterInstall",
+		"type": "boolean",
+		"title": "Reboot the device after installing this skill",
+		"default": false
+	  },
+	  "name": {
+		"$id": "#/properties/name",
+		"type": "string",
+		"title": "Name of the skill",
+		"default": "",
+		"examples": [
+		  "AliceCore"
+		],
+		"pattern": "^[A-Z][a-zA-Z0-9]+$"
+	  },
 		"speakableName": {
-			"$id"     : "#/properties/name",
-			"type"    : "string",
-			"title"   : "Name of the skill in a form a TTS can speak it",
-			"default" : "",
-			"examples": [
-				"Alice core"
-			],
-			"pattern" : "^[a-zA-Z0-9 ]+$"
+		  "$id": "#/properties/speakableName",
+		  "type": "string",
+		  "title": "Name of the skill in a form a TTS can speak it",
+		  "default": "",
+		  "examples": [
+			"Alice core"
+		  ],
+		  "pattern": "^[a-zA-Z0-9 ]+$"
 		},
 		"version"      : {
 			"$id": "#/properties/version",
