@@ -1,6 +1,6 @@
 # Project Alice skill kit
 
-The Project Alice skill kit is a tool that helps creating skills for Alice.
+The Project Alice skill kit is a tool that helps create skills for Alice.
 
 ## Features
 - Create new skills
