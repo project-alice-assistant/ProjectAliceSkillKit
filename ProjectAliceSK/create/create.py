@@ -825,14 +825,11 @@ def create(file: str = ''):
 def createWidget(widget: str = None, path: str = None):
 	"""
 	create the widget structure for an existing skill
-	:param widget:
-	:param path:
-	:return:
 	"""
 	if widget is None or path is None:
 		raise Exception("missing params")
 
-	skillPath = Path(skillPath)
+	skillPath = Path(path)
 	SkillCreator(widgetName=widget, skillPath=skillPath).start()
 
 
@@ -842,14 +839,11 @@ def createWidget(widget: str = None, path: str = None):
 def createDeviceType(device: str = None, path: str = None):
 	"""
 	create the deviceType structure for an existing skill
-	:param device:
-	:param path:
-	:return:
 	"""
 	if device is None or path is None:
 		raise Exception("missing params")
 
-	skillPath = Path(skillPath)
+	skillPath = Path(path)
 	SkillCreator(deviceTypeNamew=device, skillPath=skillPath).start()
 
 
@@ -859,14 +853,11 @@ def createDeviceType(device: str = None, path: str = None):
 def createNode(node: str = None, path: str = None):
 	"""
 	create the scenario node structure for an existing skill
-	:param node:
-	:param path:
-	:return:
 	"""
 	if node is None or path is None:
 		raise Exception("missing params")
 
-	skillPath = Path(skillPath)
+	skillPath = Path(path)
 	SkillCreator(nodeName=node, skillPath=skillPath).start()
 
 
