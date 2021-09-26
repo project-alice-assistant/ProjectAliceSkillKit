@@ -22,11 +22,17 @@ import click
 
 try:
 	from ProjectAliceSK.create.create import create
+	from ProjectAliceSK.create.create import createWidget
+	from ProjectAliceSK.create.create import createDeviceType
+	from ProjectAliceSK.create.create import createNode
 	from ProjectAliceSK.makeTalks.makeTalks import makeTalks
 	from ProjectAliceSK.validate.JsonValidator import validate
 	from ProjectAliceSK.unittests.unittests import unittests
 except ModuleNotFoundError:
 	from create.create import create
+	from create.create import createWidget
+	from create.create import createDeviceType
+	from create.create import createNode
 	from makeTalks.makeTalks import makeTalks
 	from validate.JsonValidator import validate
 	from unittests.unittests import unittests
