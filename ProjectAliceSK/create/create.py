@@ -41,15 +41,29 @@ class SkillCreator:
 
 	SEPARATOR = '\n----------------------------\n'
 
-	def __init__(self, fromFile: Path = None):
-		self._skillPath = None
+	def __init__(self, fromFile: Path = None, skillPath: Path = None, widgetName: str = None, deviceTypeName: str = None, nodeName: str = None):
+		self._skillPath = skillPath
 		self._general = None
 		self._fromFile = fromFile
+		self._widgetName = widgetName
+		self._deviceTypeName = deviceTypeName
+		self._nodeName = nodeName
 
 
 	def start(self):
 		if self._fromFile:
 			return self.createFromFile()
+		if self._skillPath:
+			#fill the information form the given installFile - abort if no file is found
+			if not self.fillDataFromInstallFile():
+				return False
+
+			if self._widgetName:
+				return self.makeWidgets([self._widgetName])
+			if self._deviceTypeName:
+				return self.makeDevices([self._deviceTypeName])
+			if self._nodeName:
+				return self.makeScenarioNodes([self._nodeName])
 
 		print(' _____ _    _ _ _   _   ___ _   ')
 		print('/  ___| |  (_) | | | | / (_) |  ')
@@ -79,6 +93,17 @@ class SkillCreator:
 		print(f"You can now start creating your skill. You will find your skill in {Path(self._skillPath)}")
 		print('\nRemember to edit the generated files to remove the dummy data!!\n')
 		print('Thank you for creating for Project Alice')
+
+
+	def fillDataFromInstallFile(self) -> bool:
+		installs = self._skillPath.glob('*.install')
+		if len(installs) != 1:
+			return False
+		install = installs[0]
+		data = json.loads(install.read_text())
+		self._general['skillName'] = data['name']
+		self._general['langs'] = data['conditions']['langs']
+		return True
 
 
 	def createFromFile(self) -> bool:
@@ -792,6 +817,57 @@ def create(file: str = ''):
 	if file:
 		file = Path(file)
 	SkillCreator(file).start()
+
+
+@click.command()
+@click.option('-w', '--widget', default=None, show_default=True, help='Widget to be added')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+def createWidget(widget: str = None, path: str = None):
+	"""
+	create the widget structure for an existing skill
+	:param widget:
+	:param path:
+	:return:
+	"""
+	if widget is None or path is None:
+		raise Exception("missing params")
+
+	skillPath = Path(skillPath)
+	SkillCreator(widgetName=widget, skillPath=skillPath).start()
+
+
+@click.command()
+@click.option('-d', '--device', default=None, show_default=True, help='DeviceType to be added')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+def createDeviceType(device: str = None, path: str = None):
+	"""
+	create the deviceType structure for an existing skill
+	:param device:
+	:param path:
+	:return:
+	"""
+	if device is None or path is None:
+		raise Exception("missing params")
+
+	skillPath = Path(skillPath)
+	SkillCreator(deviceTypeNamew=device, skillPath=skillPath).start()
+
+
+@click.command()
+@click.option('-n', '--node', default=None, show_default=True, help='Scenario Node to be added')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+def createDeviceType(node: str = None, path: str = None):
+	"""
+	create the scenario node structure for an existing skill
+	:param node:
+	:param path:
+	:return:
+	"""
+	if node is None or path is None:
+		raise Exception("missing params")
+
+	skillPath = Path(skillPath)
+	SkillCreator(nodeName=node, skillPath=skillPath).start()
 
 
 if __name__ == '__main__':
