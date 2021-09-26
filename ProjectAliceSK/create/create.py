@@ -43,7 +43,7 @@ class SkillCreator:
 
 	def __init__(self, fromFile: Path = None, skillPath: Path = None, widgetName: str = None, deviceTypeName: str = None, nodeName: str = None):
 		self._skillPath = skillPath
-		self._general = None
+		self._general = dict()
 		self._fromFile = fromFile
 		self._widgetName = widgetName
 		self._deviceTypeName = deviceTypeName
@@ -96,13 +96,13 @@ class SkillCreator:
 
 
 	def fillDataFromInstallFile(self) -> bool:
-		installs = self._skillPath.glob('*.install')
+		installs = list(self._skillPath.glob('*.install'))
 		if len(installs) != 1:
 			return False
 		install = installs[0]
 		data = json.loads(install.read_text())
 		self._general['skillName'] = data['name']
-		self._general['langs'] = data['conditions']['langs']
+		self._general['langs'] = data['conditions']['lang']
 		return True
 
 
