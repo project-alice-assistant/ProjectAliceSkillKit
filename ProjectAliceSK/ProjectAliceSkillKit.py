@@ -43,6 +43,9 @@ def cli():
 
 cli.add_command(validate)
 cli.add_command(create)
+cli.add_command(createWidget)
+cli.add_command(createDeviceType)
+cli.add_command(createNode)
 cli.add_command(makeTalks)
 cli.add_command(unittests)
 

@@ -856,7 +856,7 @@ def createDeviceType(device: str = None, path: str = None):
 @click.command()
 @click.option('-n', '--node', default=None, show_default=True, help='Scenario Node to be added')
 @click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
-def createDeviceType(node: str = None, path: str = None):
+def createNode(node: str = None, path: str = None):
 	"""
 	create the scenario node structure for an existing skill
 	:param node:
