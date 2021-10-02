@@ -844,7 +844,7 @@ def createDeviceType(device: str = None, path: str = None):
 		raise Exception("missing params")
 
 	skillPath = Path(path)
-	SkillCreator(deviceTypeNamew=device, skillPath=skillPath).start()
+	SkillCreator(deviceTypeName=device, skillPath=skillPath).start()
 
 
 @click.command()
