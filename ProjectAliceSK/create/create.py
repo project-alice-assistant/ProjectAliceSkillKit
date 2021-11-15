@@ -19,15 +19,16 @@
 
 from __future__ import print_function, unicode_literals
 
-import click
-import jinja2
 import json
 import os
-import requests
 import shutil
 import subprocess
-from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 from pathlib import Path
+
+import click
+import jinja2
+import requests
+from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
 
 
 class SkillCreationFailed(Exception):
@@ -821,7 +822,7 @@ def create(file: str = ''):
 
 @click.command()
 @click.option('-w', '--widget', default=None, show_default=True, help='Widget to be added')
-@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skills directory')
 def createWidget(widget: str = None, path: str = None):
 	"""
 	create the widget structure for an existing skill
@@ -835,7 +836,7 @@ def createWidget(widget: str = None, path: str = None):
 
 @click.command()
 @click.option('-d', '--device', default=None, show_default=True, help='DeviceType to be added')
-@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skill directory')
 def createDeviceType(device: str = None, path: str = None):
 	"""
 	create the deviceType structure for an existing skill
@@ -849,7 +850,7 @@ def createDeviceType(device: str = None, path: str = None):
 
 @click.command()
 @click.option('-n', '--node', default=None, show_default=True, help='Scenario Node to be added')
-@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skill directory')
 def createNode(node: str = None, path: str = None):
 	"""
 	create the scenario node structure for an existing skill
@@ -862,7 +863,7 @@ def createNode(node: str = None, path: str = None):
 
 
 @click.command()
-@click.option('-g', '--token', default=None, show_default=False, help='Your Github token')
+@click.option('-t', '--token', default=None, show_default=False, help='Your Github token')
 @click.option('-a', '--author', default=None, show_default=False, help='Your Github username')
 @click.option('-p', '--path', default=None, show_default=False, help='Path to the skill directory')
 @click.option('-d', '--desc', default=None, show_default=False, help='Skill description for Github')
