@@ -141,7 +141,7 @@ class SkillCreator:
 				'author'            : self._general['username'],
 				'maintainers'       : [],
 				'desc'              : self._general['description'],
-				'aliceMinVersion'   : '1.0.0-b5',
+				'aliceMinVersion'   : '1.0.0-rc1',
 				'pipRequirements'   : data['pipreq'],
 				'systemRequirements': data['sysreq'],
 				'conditions'        : data['conditions']
@@ -859,6 +859,21 @@ def createNode(node: str = None, path: str = None):
 
 	skillPath = Path(path)
 	SkillCreator(nodeName=node, skillPath=skillPath).start()
+
+
+@click.command()
+@click.option('-g', '--token', default=None, show_default=False, help='Your Github token')
+@click.option('-a', '--author', default=None, show_default=False, help='Your Github username')
+@click.option('-p', '--path', default=None, show_default=False, help='Path to the skill directory')
+@click.option('-d', '--desc', default=None, show_default=False, help='Skill description for Github')
+def uploadToGithub(github_token: str, skill_author: str, skill_path: str, skill_desc: str):
+	skillPath = Path(skill_path)
+	if not skillPath.exists():
+		raise Exception('Invalid skill path')
+
+	skillName = skillPath.stem
+	if not uploadSkillToGithub(githubToken=github_token, skillAuthor=skill_author, skillName=skillName, skillPath=skillPath, skillDesc=skill_desc):
+		exit(1)
 
 
 if __name__ == '__main__':
