@@ -22,13 +22,14 @@ from __future__ import print_function, unicode_literals
 import json
 import os
 import shutil
-import subprocess
 from pathlib import Path
+from typing import Union
 
 import click
 import jinja2
 import requests
-from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
+from AliceGit.Git import Repository
+from PyInquirer import ValidationError, Validator, prompt
 
 
 class SkillCreationFailed(Exception):
@@ -166,7 +167,7 @@ class SkillCreator:
 
 
 	def generalQuestions(self):
-		answers = prompt(FIRST_QUESTION, style=STYLE)
+		answers = prompt(FIRST_QUESTION)
 
 		self._skillPath = Path.home() / 'ProjectAliceSkillKit' / answers['username'] / answers['skillName']
 
@@ -187,18 +188,20 @@ class SkillCreator:
 					'when'    : lambda subAnswers: not subAnswers['delete']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if subAnswers['delete']:
 				shutil.rmtree(path=self._skillPath)
 			else:
 				self._skillPath = Path.home() / 'ProjectAlice/skills/' / subAnswers['skillName']
 				answers['skillName'] = subAnswers['skillName']
 
-		subAnswers = prompt(NEXT_QUESTION, style=STYLE)
+		subAnswers = prompt(NEXT_QUESTION)
 		self._general = {**answers, **subAnswers}
 
 
-	def createTemplateFile(self, outputPath: str, templateFile: str, **kwargs):
+	def createTemplateFile(self, outputPath: Union[Path, str], templateFile: str, **kwargs):
+		if isinstance(outputPath, str):
+			outputPath = Path(outputPath)
 		templateLoader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), 'templates'))
 		templateEnv = jinja2.Environment(loader=templateLoader, autoescape=True)
 		template = templateEnv.get_template(templateFile)
@@ -247,7 +250,7 @@ class SkillCreator:
 			}
 		]
 
-		answers = prompt(questions, style=STYLE)
+		answers = prompt(questions)
 
 		reqs = list()
 		while True:
@@ -265,7 +268,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['requirements']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['requirements'] or subAnswers['req'] == 'stop':
 				break
 			reqs.append(subAnswers['req'])
@@ -287,7 +290,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['sysrequirements']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['sysrequirements'] or subAnswers['sysreq'] == 'stop':
 				break
 			sysreqs.append(subAnswers['sysreq'])
@@ -309,7 +312,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['neededSkills']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['neededSkills'] or subAnswers['skills'] == 'stop':
 				break
 			neededSkills.append(subAnswers['skills'])
@@ -331,7 +334,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['conflictingSkills']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['conflictingSkills'] or subAnswers['conflictSkills'] == 'stop':
 				break
 			conflictingSkills.append(subAnswers['conflictSkills'])
@@ -490,7 +493,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['devices']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['devices'] or subAnswers['device'] == 'stop':
 				break
 			skillDevices.append(subAnswers['device'])
@@ -540,7 +543,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['widgets']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['widgets'] or subAnswers['widget'] == 'stop':
 				break
 			skillWidgets.append(subAnswers['widget'])
@@ -598,7 +601,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['nodes']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['nodes'] or subAnswers['node'] == 'stop':
 				break
 			skillNodes.append(subAnswers['node'])
@@ -644,7 +647,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['uploadToGithub']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['uploadToGithub'] or subAnswers['githubToken']:
 				break
 
@@ -662,16 +665,15 @@ class SkillCreator:
 				print('\nYour skill was uploaded to your Github account!')
 
 
-STYLE = style_from_dict({
-	Token.QuestionMark: '#996633 bold',
-	Token.Selected    : '#5F819D bold',
-	Token.Instruction : '#99ff33 bold', #NOSONAR
-	Token.Pointer     : '#673ab7 bold',
-	Token.Answer      : '#0066ff bold',
-	Token.Question    : '#99ff33 bold',
-	Token.Input       : '#99ff33 bold'
-})
-
+# STYLE = style_from_dict({
+# 	Token.QuestionMark: '#996633 bold',
+# 	Token.Selected    : '#5F819D bold',
+# 	Token.Instruction : '#99ff33 bold', #NOSONAR
+# 	Token.Pointer     : '#673ab7 bold',
+# 	Token.Answer      : '#0066ff bold',
+# 	Token.Question    : '#99ff33 bold',
+# 	Token.Input       : '#99ff33 bold'
+# })
 
 class NotEmpty(Validator):
 
@@ -789,18 +791,17 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 		if req.status_code != 201:
 			raise Exception("Couldn't create the repository on Github")
 
-		subprocess.run(f'git -C {str(skillPath)} init'.split())
-
-		subprocess.run(['git', '-C', str(skillPath), 'config', 'user.email', 'githubbot@projectalice.io'])
-		subprocess.run(['git', '-C', str(skillPath), 'config', 'user.name', 'ProjectAliceBot'])
-
 		remote = f'https://{skillAuthor}:{githubToken}@github.com/{skillAuthor}/skill_{skillName}.git'
-		subprocess.run(['git', '-C', str(skillPath), 'remote', 'add', 'origin', remote])
+		try:
+			repository = Repository(directory=skillPath, init=True, url=remote)
+		except:
+			raise
 
-		subprocess.run(['git', '-C', str(skillPath), 'add', '--all'])
-		subprocess.run(['git', '-C', str(skillPath), 'commit', '-m', '"Initial upload by Project Alice Skill Kit"'])
-		subprocess.run(['git', '-C', str(skillPath), 'push', '--set-upstream', 'origin', 'master'])
-
+		repository.remoteAdd(url=remote)
+		repository.config(key='user.email', value='githubbot@projectalice.io')
+		repository.config(key='user.name', value='ProjectAliceBot')
+		repository.commit(message='Initial upload by Project Alice Skill Kit', autoAdd=True)
+		repository.push()
 		url = f'https://github.com/{skillAuthor}/skill_{skillName}.git'
 		print(f'Skill uploaded! You can find it on {url}')
 		return True

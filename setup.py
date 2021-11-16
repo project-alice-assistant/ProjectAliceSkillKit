@@ -28,7 +28,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='projectalice-sk',
 	author='ProjectAlice',
-	version='2.1.3',
+	version='2.2.0',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
 	description='Project Alice skill kit',
@@ -41,6 +41,7 @@ setup(
 	use_scm_version=False,
 	setup_requires=['setuptools_scm'],
 	install_requires=[
+		'AliceGit',
 		'jsonschema>=3.0.0',
 		'click',
 		'unidecode',
