@@ -19,17 +19,17 @@
 
 from __future__ import print_function, unicode_literals
 
+import click
+import jinja2
 import json
 import os
 import shutil
+from PyInquirer import ValidationError, Validator, prompt
 from pathlib import Path
 from typing import Union
 
-import click
-import jinja2
-import requests
 from AliceGit.Git import Repository
-from PyInquirer import ValidationError, Validator, prompt
+from AliceGit.Github import Github
 
 
 class SkillCreationFailed(Exception):
@@ -786,10 +786,11 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 			'has-issues' : True,
 			'has-wiki'   : False
 		}
-		req = requests.post('https://api.github.com/user/repos', data=json.dumps(data), auth=(skillAuthor, githubToken))
 
-		if req.status_code != 201:
-			raise Exception("Couldn't create the repository on Github")
+		try:
+			github = Github(username=skillAuthor, token=githubToken, repositoryName=data['name'], createRepository=True, options=data)
+		except:
+			raise
 
 		remote = f'https://{skillAuthor}:{githubToken}@github.com/{skillAuthor}/skill_{skillName}.git'
 		try:
@@ -802,8 +803,7 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 		repository.config(key='user.name', value='ProjectAliceBot')
 		repository.commit(message='Initial upload by Project Alice Skill Kit', autoAdd=True)
 		repository.push()
-		url = f'https://github.com/{skillAuthor}/skill_{skillName}.git'
-		print(f'Skill uploaded! You can find it on {url}')
+		print(f'Skill uploaded! You can find it on {github.url}')
 		return True
 	except Exception as e:
 		print(f'Something went wrong uploading the skill on Github: {e}')
