@@ -54,7 +54,10 @@ class SkillCreator:
 
 	def start(self):
 		if self._fromFile:
-			return self.createFromFile()
+			try:
+				return self.createFromFile()
+			except:
+				return False
 		if self._skillPath:
 			#fill the information form the given installFile - abort if no file is found
 			if not self.fillDataFromInstallFile():
@@ -462,9 +465,9 @@ class SkillCreator:
 		)
 
 
-	def createInstructions(self):
+	def createInstructions(self) -> bool:
 		if not self._general['createInstructions']:
-			return
+			return False
 
 		print('Creating instruction files')
 		self.createDirectories(['instructions'])
@@ -473,9 +476,10 @@ class SkillCreator:
 			print(f'- {lang}')
 			files.append(f'instructions/{lang}.md')
 		self.createFiles(files)
+		return True
 
 
-	def createDevices(self):
+	def createDevices(self) -> bool:
 		skillDevices = []
 		while True:
 			questions = [
@@ -499,14 +503,14 @@ class SkillCreator:
 			skillDevices.append(subAnswers['device'])
 
 		if not skillDevices:
-			return
+			return False
 
-		self.makeDevices(skillDevices)
+		return self.makeDevices(skillDevices)
 
 
-	def makeDevices(self, skillDevices: list):
+	def makeDevices(self, skillDevices: list) -> bool:
 		if not skillDevices:
-			return
+			return False
 
 		print('Creating devices base directories')
 		self.createDirectories([
@@ -524,8 +528,10 @@ class SkillCreator:
 			self.createTemplateFile(f'devices/{device}.py', 'devices/device.py.j2', device=device)
 			self.createTemplateFile(f'devices/{device}.config.template', 'devices/device.config.template.j2')
 
+		return True
 
-	def createWidgets(self):
+
+	def createWidgets(self) -> bool:
 		skillWidgets = []
 		while True:
 			questions = [
@@ -549,14 +555,14 @@ class SkillCreator:
 			skillWidgets.append(subAnswers['widget'])
 
 		if not skillWidgets:
-			return
+			return False
 
-		self.makeWidgets(skillWidgets)
+		return self.makeWidgets(skillWidgets)
 
 
-	def makeWidgets(self, skillWidgets: list):
+	def makeWidgets(self, skillWidgets: list) -> bool:
 		if not skillWidgets:
-			return
+			return False
 
 		print('Creating widgets base directories')
 		self.createDirectories([
@@ -581,8 +587,10 @@ class SkillCreator:
 			self.createTemplateFile(f'widgets/{widget}.py', 'widgets/widget.py.j2', widget=widget)
 			(self._skillPath / f'widgets/lang/{widget}.lang.json').write_text('{}')
 
+		return True
 
-	def createScenarioNodes(self):
+
+	def createScenarioNodes(self) -> bool:
 		skillNodes = []
 		while True:
 			questions = [
@@ -607,14 +615,14 @@ class SkillCreator:
 			skillNodes.append(subAnswers['node'])
 
 		if not skillNodes:
-			return
+			return False
 
-		self.makeScenarioNodes(skillNodes)
+		return self.makeScenarioNodes(skillNodes)
 
 
-	def makeScenarioNodes(self, skillNodes: list):
+	def makeScenarioNodes(self, skillNodes: list) -> bool:
 		if not skillNodes:
-			return
+			return False
 
 		print('Creating scenario nodes base directories')
 		self.createDirectories([f'scenarioNodes/locales/{lang}' for lang in self._general['langs']])
@@ -628,9 +636,10 @@ class SkillCreator:
 			for lang in self._general['langs']:
 				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.json', 'nodes/locales.json.j2',
 										nodeName=nodeName)
+		return True
 
 
-	def uploadGithub(self):
+	def uploadGithub(self) -> bool:
 		while True:
 			questions = [
 				{
@@ -661,8 +670,10 @@ class SkillCreator:
 			)
 			if not result:
 				print('\nUnfortunately something went wrong uploading your skill. You can always do it manually!')
+				return False
 			else:
 				print('\nYour skill was uploaded to your Github account!')
+				return True
 
 
 # STYLE = style_from_dict({
@@ -818,7 +829,10 @@ def create(file: str = ''):
 	"""
 	if file:
 		file = Path(file)
-	SkillCreator(file).start()
+	if SkillCreator(file).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
@@ -829,10 +843,13 @@ def createWidget(widget: str = None, path: str = None):
 	create the widget structure for an existing skill
 	"""
 	if widget is None or path is None:
-		raise Exception("missing params")
+		raise Exception('Missing parameters to create widget')
 
 	skillPath = Path(path)
-	SkillCreator(widgetName=widget, skillPath=skillPath).start()
+	if SkillCreator(widgetName=widget, skillPath=skillPath).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
@@ -843,10 +860,13 @@ def createDeviceType(device: str = None, path: str = None):
 	create the deviceType structure for an existing skill
 	"""
 	if device is None or path is None:
-		raise Exception("missing params")
+		raise Exception('Missing parameters to create device type')
 
 	skillPath = Path(path)
-	SkillCreator(deviceTypeName=device, skillPath=skillPath).start()
+	if SkillCreator(deviceTypeName=device, skillPath=skillPath).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
@@ -857,10 +877,13 @@ def createNode(node: str = None, path: str = None):
 	create the scenario node structure for an existing skill
 	"""
 	if node is None or path is None:
-		raise Exception("missing params")
+		raise Exception('Missing parameters to create node')
 
 	skillPath = Path(path)
-	SkillCreator(nodeName=node, skillPath=skillPath).start()
+	if SkillCreator(nodeName=node, skillPath=skillPath).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
@@ -868,13 +891,15 @@ def createNode(node: str = None, path: str = None):
 @click.option('-a', '--author', default=None, show_default=False, help='Your Github username')
 @click.option('-p', '--path', default=None, show_default=False, help='Path to the skill directory')
 @click.option('-d', '--desc', default=None, show_default=False, help='Skill description for Github')
-def uploadToGithub(github_token: str, skill_author: str, skill_path: str, skill_desc: str):
+def uploadToGithub(github_token: str, skill_author: str, skill_path: str, skill_desc: str): #NOSONAR
 	skillPath = Path(skill_path)
 	if not skillPath.exists():
 		raise Exception('Invalid skill path')
 
 	skillName = skillPath.stem
-	if not uploadSkillToGithub(githubToken=github_token, skillAuthor=skill_author, skillName=skillName, skillPath=skillPath, skillDesc=skill_desc):
+	if uploadSkillToGithub(githubToken=github_token, skillAuthor=skill_author, skillName=skillName, skillPath=skillPath, skillDesc=skill_desc):
+		exit(0)
+	else:
 		exit(1)
 
 
