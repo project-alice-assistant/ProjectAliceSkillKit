@@ -28,7 +28,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='projectalice-sk',
 	author='ProjectAlice',
-	version='2.2.1',
+	version='2.2.2',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
 	description='Project Alice skill kit',
@@ -49,10 +49,10 @@ setup(
 		'PyInquirer',
 		'prompt_toolkit==1.0.14',
 		'jinja2',
-		'pytest~=5.2.2',
-		'coverage~=4.5.4',
-		'pytest-cov~=2.8.1',
-		'coveralls~=1.8.2'
+		'pytest~=6.2.5',
+		'coverage~=6.2',
+		'pytest-cov~=3.0.0',
+		'coveralls~=3.3.1'
 	],
 	classifiers=[
 		"Development Status :: 5 - Production/Stable",
