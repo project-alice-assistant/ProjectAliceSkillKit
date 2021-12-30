@@ -126,7 +126,8 @@ class SkillCreator:
 				'description'       : data['description'],
 				'langs'             : data['langs'],
 				'icon'              : data.get('icon', 'fas fa-biohazard'),
-				'createInstructions': data['createInstructions']
+				'createInstructions': data['createInstructions'],
+				'aliceMinVersion'   : data.get('aliceMinVersion', '1.0.0-rc3')
 			}
 
 			self._skillPath = Path.home() / 'ProjectAliceSkillKit' / self._general['username'] / self._general['skillName']
@@ -147,7 +148,7 @@ class SkillCreator:
 				'author'            : self._general['username'],
 				'maintainers'       : [],
 				'desc'              : self._general['description'],
-				'aliceMinVersion'   : '1.0.0-rc1',
+				'aliceMinVersion'   : self._general['aliceMinVersion'],
 				'pipRequirements'   : data['pipreq'],
 				'systemRequirements': data['sysreq'],
 				'conditions'        : data['conditions']
