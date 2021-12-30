@@ -23,11 +23,13 @@ import click
 import jinja2
 import json
 import os
-import requests
 import shutil
-import subprocess
-from PyInquirer import Token, ValidationError, Validator, prompt, style_from_dict
+from PyInquirer import ValidationError, Validator, prompt
 from pathlib import Path
+from typing import Union
+
+from AliceGit.Git import Repository
+from AliceGit.Github import Github
 
 
 class SkillCreationFailed(Exception):
@@ -52,7 +54,10 @@ class SkillCreator:
 
 	def start(self):
 		if self._fromFile:
-			return self.createFromFile()
+			try:
+				return self.createFromFile()
+			except:
+				return False
 		if self._skillPath:
 			#fill the information form the given installFile - abort if no file is found
 			if not self.fillDataFromInstallFile():
@@ -142,7 +147,7 @@ class SkillCreator:
 				'author'            : self._general['username'],
 				'maintainers'       : [],
 				'desc'              : self._general['description'],
-				'aliceMinVersion'   : '1.0.0-b5',
+				'aliceMinVersion'   : '1.0.0-rc1',
 				'pipRequirements'   : data['pipreq'],
 				'systemRequirements': data['sysreq'],
 				'conditions'        : data['conditions']
@@ -166,7 +171,7 @@ class SkillCreator:
 
 
 	def generalQuestions(self):
-		answers = prompt(FIRST_QUESTION, style=STYLE)
+		answers = prompt(FIRST_QUESTION)
 
 		self._skillPath = Path.home() / 'ProjectAliceSkillKit' / answers['username'] / answers['skillName']
 
@@ -187,18 +192,20 @@ class SkillCreator:
 					'when'    : lambda subAnswers: not subAnswers['delete']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if subAnswers['delete']:
 				shutil.rmtree(path=self._skillPath)
 			else:
 				self._skillPath = Path.home() / 'ProjectAlice/skills/' / subAnswers['skillName']
 				answers['skillName'] = subAnswers['skillName']
 
-		subAnswers = prompt(NEXT_QUESTION, style=STYLE)
+		subAnswers = prompt(NEXT_QUESTION)
 		self._general = {**answers, **subAnswers}
 
 
-	def createTemplateFile(self, outputPath: str, templateFile: str, **kwargs):
+	def createTemplateFile(self, outputPath: Union[Path, str], templateFile: str, **kwargs):
+		if isinstance(outputPath, str):
+			outputPath = Path(outputPath)
 		templateLoader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), 'templates'))
 		templateEnv = jinja2.Environment(loader=templateLoader, autoescape=True)
 		template = templateEnv.get_template(templateFile)
@@ -247,7 +254,7 @@ class SkillCreator:
 			}
 		]
 
-		answers = prompt(questions, style=STYLE)
+		answers = prompt(questions)
 
 		reqs = list()
 		while True:
@@ -265,7 +272,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['requirements']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['requirements'] or subAnswers['req'] == 'stop':
 				break
 			reqs.append(subAnswers['req'])
@@ -287,7 +294,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['sysrequirements']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['sysrequirements'] or subAnswers['sysreq'] == 'stop':
 				break
 			sysreqs.append(subAnswers['sysreq'])
@@ -309,7 +316,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['neededSkills']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['neededSkills'] or subAnswers['skills'] == 'stop':
 				break
 			neededSkills.append(subAnswers['skills'])
@@ -331,7 +338,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['conflictingSkills']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['conflictingSkills'] or subAnswers['conflictSkills'] == 'stop':
 				break
 			conflictingSkills.append(subAnswers['conflictSkills'])
@@ -459,9 +466,9 @@ class SkillCreator:
 		)
 
 
-	def createInstructions(self):
+	def createInstructions(self) -> bool:
 		if not self._general['createInstructions']:
-			return
+			return False
 
 		print('Creating instruction files')
 		self.createDirectories(['instructions'])
@@ -470,9 +477,10 @@ class SkillCreator:
 			print(f'- {lang}')
 			files.append(f'instructions/{lang}.md')
 		self.createFiles(files)
+		return True
 
 
-	def createDevices(self):
+	def createDevices(self) -> bool:
 		skillDevices = []
 		while True:
 			questions = [
@@ -490,20 +498,20 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['devices']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['devices'] or subAnswers['device'] == 'stop':
 				break
 			skillDevices.append(subAnswers['device'])
 
 		if not skillDevices:
-			return
+			return False
 
-		self.makeDevices(skillDevices)
+		return self.makeDevices(skillDevices)
 
 
-	def makeDevices(self, skillDevices: list):
+	def makeDevices(self, skillDevices: list) -> bool:
 		if not skillDevices:
-			return
+			return False
 
 		print('Creating devices base directories')
 		self.createDirectories([
@@ -521,8 +529,10 @@ class SkillCreator:
 			self.createTemplateFile(f'devices/{device}.py', 'devices/device.py.j2', device=device)
 			self.createTemplateFile(f'devices/{device}.config.template', 'devices/device.config.template.j2')
 
+		return True
 
-	def createWidgets(self):
+
+	def createWidgets(self) -> bool:
 		skillWidgets = []
 		while True:
 			questions = [
@@ -540,20 +550,20 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['widgets']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['widgets'] or subAnswers['widget'] == 'stop':
 				break
 			skillWidgets.append(subAnswers['widget'])
 
 		if not skillWidgets:
-			return
+			return False
 
-		self.makeWidgets(skillWidgets)
+		return self.makeWidgets(skillWidgets)
 
 
-	def makeWidgets(self, skillWidgets: list):
+	def makeWidgets(self, skillWidgets: list) -> bool:
 		if not skillWidgets:
-			return
+			return False
 
 		print('Creating widgets base directories')
 		self.createDirectories([
@@ -578,8 +588,10 @@ class SkillCreator:
 			self.createTemplateFile(f'widgets/{widget}.py', 'widgets/widget.py.j2', widget=widget)
 			(self._skillPath / f'widgets/lang/{widget}.lang.json').write_text('{}')
 
+		return True
 
-	def createScenarioNodes(self):
+
+	def createScenarioNodes(self) -> bool:
 		skillNodes = []
 		while True:
 			questions = [
@@ -598,20 +610,20 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['nodes']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['nodes'] or subAnswers['node'] == 'stop':
 				break
 			skillNodes.append(subAnswers['node'])
 
 		if not skillNodes:
-			return
+			return False
 
-		self.makeScenarioNodes(skillNodes)
+		return self.makeScenarioNodes(skillNodes)
 
 
-	def makeScenarioNodes(self, skillNodes: list):
+	def makeScenarioNodes(self, skillNodes: list) -> bool:
 		if not skillNodes:
-			return
+			return False
 
 		print('Creating scenario nodes base directories')
 		self.createDirectories([f'scenarioNodes/locales/{lang}' for lang in self._general['langs']])
@@ -625,9 +637,10 @@ class SkillCreator:
 			for lang in self._general['langs']:
 				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.json', 'nodes/locales.json.j2',
 										nodeName=nodeName)
+		return True
 
 
-	def uploadGithub(self):
+	def uploadGithub(self) -> bool:
 		while True:
 			questions = [
 				{
@@ -644,7 +657,7 @@ class SkillCreator:
 					'when'    : lambda subAnswers: subAnswers['uploadToGithub']
 				}
 			]
-			subAnswers = prompt(questions, style=STYLE)
+			subAnswers = prompt(questions)
 			if not subAnswers['uploadToGithub'] or subAnswers['githubToken']:
 				break
 
@@ -658,20 +671,21 @@ class SkillCreator:
 			)
 			if not result:
 				print('\nUnfortunately something went wrong uploading your skill. You can always do it manually!')
+				return False
 			else:
 				print('\nYour skill was uploaded to your Github account!')
+				return True
 
 
-STYLE = style_from_dict({
-	Token.QuestionMark: '#996633 bold',
-	Token.Selected    : '#5F819D bold',
-	Token.Instruction : '#99ff33 bold', #NOSONAR
-	Token.Pointer     : '#673ab7 bold',
-	Token.Answer      : '#0066ff bold',
-	Token.Question    : '#99ff33 bold',
-	Token.Input       : '#99ff33 bold'
-})
-
+# STYLE = style_from_dict({
+# 	Token.QuestionMark: '#996633 bold',
+# 	Token.Selected    : '#5F819D bold',
+# 	Token.Instruction : '#99ff33 bold', #NOSONAR
+# 	Token.Pointer     : '#673ab7 bold',
+# 	Token.Answer      : '#0066ff bold',
+# 	Token.Question    : '#99ff33 bold',
+# 	Token.Input       : '#99ff33 bold'
+# })
 
 class NotEmpty(Validator):
 
@@ -784,25 +798,24 @@ def uploadSkillToGithub(githubToken: str, skillAuthor: str, skillName: str, skil
 			'has-issues' : True,
 			'has-wiki'   : False
 		}
-		req = requests.post('https://api.github.com/user/repos', data=json.dumps(data), auth=(skillAuthor, githubToken))
 
-		if req.status_code != 201:
-			raise Exception("Couldn't create the repository on Github")
-
-		subprocess.run(f'git -C {str(skillPath)} init'.split())
-
-		subprocess.run(['git', '-C', str(skillPath), 'config', 'user.email', 'githubbot@projectalice.io'])
-		subprocess.run(['git', '-C', str(skillPath), 'config', 'user.name', 'ProjectAliceBot'])
+		try:
+			github = Github(username=skillAuthor, token=githubToken, repositoryName=data['name'], createRepository=True, options=data)
+		except:
+			raise
 
 		remote = f'https://{skillAuthor}:{githubToken}@github.com/{skillAuthor}/skill_{skillName}.git'
-		subprocess.run(['git', '-C', str(skillPath), 'remote', 'add', 'origin', remote])
+		try:
+			repository = Repository(directory=skillPath, init=True, url=remote)
+		except:
+			raise
 
-		subprocess.run(['git', '-C', str(skillPath), 'add', '--all'])
-		subprocess.run(['git', '-C', str(skillPath), 'commit', '-m', '"Initial upload by Project Alice Skill Kit"'])
-		subprocess.run(['git', '-C', str(skillPath), 'push', '--set-upstream', 'origin', 'master'])
-
-		url = f'https://github.com/{skillAuthor}/skill_{skillName}.git'
-		print(f'Skill uploaded! You can find it on {url}')
+		repository.remoteAdd(url=remote)
+		repository.config(key='user.email', value='githubbot@projectalice.io')
+		repository.config(key='user.name', value='ProjectAliceBot')
+		repository.commit(message='Initial upload by Project Alice Skill Kit', autoAdd=True)
+		repository.push()
+		print(f'Skill uploaded! You can find it on {github.url}')
 		return True
 	except Exception as e:
 		print(f'Something went wrong uploading the skill on Github: {e}')
@@ -817,49 +830,78 @@ def create(file: str = ''):
 	"""
 	if file:
 		file = Path(file)
-	SkillCreator(file).start()
+	if SkillCreator(file).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
 @click.option('-w', '--widget', default=None, show_default=True, help='Widget to be added')
-@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skills directory')
 def createWidget(widget: str = None, path: str = None):
 	"""
 	create the widget structure for an existing skill
 	"""
 	if widget is None or path is None:
-		raise Exception("missing params")
+		raise Exception('Missing parameters to create widget')
 
 	skillPath = Path(path)
-	SkillCreator(widgetName=widget, skillPath=skillPath).start()
+	if SkillCreator(widgetName=widget, skillPath=skillPath).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
 @click.option('-d', '--device', default=None, show_default=True, help='DeviceType to be added')
-@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skill directory')
 def createDeviceType(device: str = None, path: str = None):
 	"""
 	create the deviceType structure for an existing skill
 	"""
 	if device is None or path is None:
-		raise Exception("missing params")
+		raise Exception('Missing parameters to create device type')
 
 	skillPath = Path(path)
-	SkillCreator(deviceTypeName=device, skillPath=skillPath).start()
+	if SkillCreator(deviceTypeName=device, skillPath=skillPath).start():
+		exit(0)
+	else:
+		exit(1)
 
 
 @click.command()
 @click.option('-n', '--node', default=None, show_default=True, help='Scenario Node to be added')
-@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skillsFolder')
+@click.option('-p', '--path', default=None, show_default=True, help='Target path, the skill directory')
 def createNode(node: str = None, path: str = None):
 	"""
 	create the scenario node structure for an existing skill
 	"""
 	if node is None or path is None:
-		raise Exception("missing params")
+		raise Exception('Missing parameters to create node')
 
 	skillPath = Path(path)
-	SkillCreator(nodeName=node, skillPath=skillPath).start()
+	if SkillCreator(nodeName=node, skillPath=skillPath).start():
+		exit(0)
+	else:
+		exit(1)
+
+
+@click.command()
+@click.option('-t', '--token', default=None, show_default=False, help='Your Github token')
+@click.option('-a', '--author', default=None, show_default=False, help='Your Github username')
+@click.option('-p', '--path', default=None, show_default=False, help='Path to the skill directory')
+@click.option('-d', '--desc', default=None, show_default=False, help='Skill description for Github')
+def uploadToGithub(github_token: str, skill_author: str, skill_path: str, skill_desc: str): #NOSONAR
+	skillPath = Path(skill_path)
+	if not skillPath.exists():
+		raise Exception('Invalid skill path')
+
+	skillName = skillPath.stem
+	if uploadSkillToGithub(githubToken=github_token, skillAuthor=skill_author, skillName=skillName, skillPath=skillPath, skillDesc=skill_desc):
+		exit(0)
+	else:
+		exit(1)
 
 
 if __name__ == '__main__':

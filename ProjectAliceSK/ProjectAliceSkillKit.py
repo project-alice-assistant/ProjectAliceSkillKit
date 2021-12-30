@@ -25,6 +25,7 @@ try:
 	from ProjectAliceSK.create.create import createWidget
 	from ProjectAliceSK.create.create import createDeviceType
 	from ProjectAliceSK.create.create import createNode
+	from ProjectAliceSK.create.create import uploadToGithub
 	from ProjectAliceSK.makeTalks.makeTalks import makeTalks
 	from ProjectAliceSK.validate.JsonValidator import validate
 	from ProjectAliceSK.unittests.unittests import unittests
@@ -52,6 +53,7 @@ cli.add_command(create)
 cli.add_command(createWidget)
 cli.add_command(createDeviceType)
 cli.add_command(createNode)
+cli.add_command(uploadToGithub)
 cli.add_command(makeTalks)
 cli.add_command(unittests)
 
