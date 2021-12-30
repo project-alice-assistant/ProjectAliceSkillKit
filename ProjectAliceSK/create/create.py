@@ -120,6 +120,7 @@ class SkillCreator:
 				'category'          : data['category'],
 				'description'       : data['description'],
 				'langs'             : data['langs'],
+				'icon'              : data.get('icon', 'fas fa-biohazard'),
 				'createInstructions': data['createInstructions']
 			}
 
@@ -136,7 +137,7 @@ class SkillCreator:
 				'name'              : self._general['skillName'],
 				'speakableName'     : self._general['speakableName'],
 				'version'           : '0.0.1',
-				'icon'              : 'fab fa-battle-net',
+				'icon'              : self._general['icon'],
 				'category'          : self._general['category'],
 				'author'            : self._general['username'],
 				'maintainers'       : [],
