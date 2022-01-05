@@ -28,7 +28,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='projectalice-sk',
 	author='ProjectAlice',
-	version='2.2.5',
+	version='2.3.0',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
 	description='Project Alice skill kit',
@@ -46,8 +46,7 @@ setup(
 		'click',
 		'unidecode',
 		'requests',
-		'PyInquirer',
-		'prompt_toolkit==1.0.14',
+		'InquirerPy~=0.3.1',
 		'jinja2',
 		'pytest~=6.2.5',
 		'coverage~=6.2',
@@ -68,5 +67,6 @@ setup(
     entry_points='''
         [console_scripts]
         projectalice-sk=ProjectAliceSK.ProjectAliceSkillKit:cli
+        aliceSk=ProjectAliceSK.ProjectAliceSkillKit:cli
     '''
 )

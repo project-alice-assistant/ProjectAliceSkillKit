@@ -24,7 +24,9 @@ import jinja2
 import json
 import os
 import shutil
-from PyInquirer import ValidationError, Validator, prompt
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from InquirerPy.validator import EmptyInputValidator
 from pathlib import Path
 from typing import Union
 
@@ -39,7 +41,7 @@ class SkillCreationFailed(Exception):
 
 
 # noinspection PyShadowingNames
-class SkillCreator:
+class SkillCreator(object):
 
 	SEPARATOR = '\n----------------------------\n'
 
@@ -95,7 +97,7 @@ class SkillCreator:
 
 		print(self.SEPARATOR)
 		print('All done!')
-		print(f"You can now start creating your skill. You will find your skill in {Path(self._skillPath)}")
+		print(f'You can now start creating your skill. You will find your skill in {Path(self._skillPath)}')
 		print('\nRemember to edit the generated files to remove the dummy data!!\n')
 		print('Thank you for creating for Project Alice')
 
@@ -172,36 +174,66 @@ class SkillCreator:
 
 
 	def generalQuestions(self):
-		answers = prompt(FIRST_QUESTION)
 
-		self._skillPath = Path.home() / 'ProjectAliceSkillKit' / answers['username'] / answers['skillName']
+		self._general['username'] = inquirer.text(
+			message='Please enter your GitHub username',
+			validate=EmptyInputValidator('Username is required')
+		).execute()
+
+		self._general['skillName'] = inquirer.text(
+			message='Please enter the name of the skill you are creating',
+			validate=EmptyInputValidator('Skill name is required'),
+			filter=lambda val: ''.join(x.capitalize() for x in val.split(' '))
+		).execute()
+
+		self._skillPath = Path.home() / 'ProjectAliceSkillKit' / self._general['username'] / self._general['skillName']
 
 		while self._skillPath.exists():
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'delete',
-					'message': 'Seems like this skill name already exists.\nDo you want to delete it locally?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'skillName',
-					'message' : 'Ok, so chose another skill name please',
-					'validate': NotEmpty,
-					'filter'  : lambda val: str(val).title().replace(' ', ''),
-					'when'    : lambda subAnswers: not subAnswers['delete']
-				}
-			]
-			subAnswers = prompt(questions)
-			if subAnswers['delete']:
-				shutil.rmtree(path=self._skillPath)
-			else:
-				self._skillPath = Path.home() / 'ProjectAlice/skills/' / subAnswers['skillName']
-				answers['skillName'] = subAnswers['skillName']
+			confirm = inquirer.confirm(
+				message='It looks like this skill name already exists.\nDo you want to delete it locally?',
+				default=False
+			).execute()
 
-		subAnswers = prompt(NEXT_QUESTION)
-		self._general = {**answers, **subAnswers}
+			if not confirm:
+				self._general['skillName'] = inquirer.text(
+					message='Ok, so chose another skill name please',
+					validate=EmptyInputValidator('Skill name is required'),
+					filter=lambda val: ''.join(x.capitalize() for x in val.split(' '))
+				).execute()
+				self._skillPath = Path.home() / 'ProjectAliceSkillKit' / self._general['username'] / self._general['skillName']
+			else:
+				shutil.rmtree(path=self._skillPath)
+
+		self._general['speakableName'] = inquirer.text(
+			message='Please enter the name of the skill in a form that can be spoken',
+			validate=EmptyInputValidator('Speakable name is required'),
+		).execute()
+
+		self._general['description'] = inquirer.text(
+			message='Please enter a description for this skill',
+			validate=EmptyInputValidator('Description is required'),
+		).execute()
+
+		self._general['category'] = inquirer.select(
+			message='Please select in which category your skill belongs',
+			choices=['weather', 'information', 'entertainment', 'music', 'game', 'kid', 'automation', 'assistance', 'security', 'planning', 'shopping', 'organisation', 'household', 'health']
+		).execute()
+
+		self._general['langs'] = inquirer.checkbox(
+			message='Choose the additional languages for this skill. Note that to english is pre-selected and mandatory.',
+			choices=[
+				Choice('fr', name='French'),
+				Choice('de', name='German'),
+				Choice('it', name='Italian'),
+				Choice('pl', name='Polish'),
+			]
+		).execute()
+		self._general['langs'].append('en')
+
+		self._general['createInstructions'] = inquirer.confirm(
+			message='Would you like to create instructions for your skill?\nInstructions display on the interface and let users know how to use your skill.',
+			default=False
+		).execute()
 
 
 	def createTemplateFile(self, outputPath: Union[Path, str], templateFile: str, **kwargs):
@@ -239,118 +271,84 @@ class SkillCreator:
 		], False)
 
 
-	def createInstallFile(self):
-		questions = [
-			{
-				'type'   : 'confirm',
-				'name'   : 'isOnline',
-				'message': 'Does your skill need internet connectivity?',
-				'default': False
-			},
-			{
-				'type'   : 'confirm',
-				'name'   : 'arbitraryCapture',
-				'message': 'Does your skill need the ASR to capture arbitrary text?',
-				'default': False
-			}
-		]
-
-		answers = prompt(questions)
-
+	@staticmethod
+	def askRequirementsName() -> list:
 		reqs = list()
 		while True:
-			questions = [{
-					'type'   : 'confirm',
-					'name'   : 'requirements',
-					'message': 'Do you want to add python pip requirements?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'req',
-					'message' : 'Enter the pip requirement name or `stop` to cancel',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['requirements']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['requirements'] or subAnswers['req'] == 'stop':
-				break
-			reqs.append(subAnswers['req'])
+			req = inquirer.text(
+				message='Enter its name or `cancel` to cancel',
+				validate=EmptyInputValidator('Name required')
+			).execute()
 
-		sysreqs = list()
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'sysrequirements',
-					'message': 'Do you want to add system requirements?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'sysreq',
-					'message' : 'Enter the requirement name or `stop` to cancel',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['sysrequirements']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['sysrequirements'] or subAnswers['sysreq'] == 'stop':
+			if req == 'cancel':
 				break
-			sysreqs.append(subAnswers['sysreq'])
+			else:
+				reqs.append(req)
+
+				confirm = inquirer.confirm(
+					message='Any other?',
+					default=False
+				).execute()
+
+				if not confirm:
+					break
+		return reqs
+
+
+	def createInstallFile(self):
+		isOnline = inquirer.confirm(
+			message='Does your skill need internet connectivity?',
+			default=False
+		).execute()
+
+		arbitraryCapture = inquirer.confirm(
+			message='Does your skill need the ASR to capture arbitrary text?',
+			default=False
+		).execute()
+
+		reqs = list()
+		confirm = inquirer.confirm(
+			message='Do you want to add any python pip requirements?',
+			default=False
+		).execute()
+
+		if confirm:
+			reqs = self.askRequirementsName()
+
+		sysReqs = list()
+		confirm = inquirer.confirm(
+			message='Do you want to add any system requirements?',
+			default=False
+		).execute()
+
+		if confirm:
+			sysReqs = self.askRequirementsName()
 
 		neededSkills = list()
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'neededSkills',
-					'message': 'Are there any skills that are REQUIRED for yours to run?' if not neededSkills else 'Any other?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'skills',
-					'message' : 'Enter the skill name or `stop` to cancel',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['neededSkills']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['neededSkills'] or subAnswers['skills'] == 'stop':
-				break
-			neededSkills.append(subAnswers['skills'])
+		confirm = inquirer.confirm(
+			message='Are there any skills that are REQUIRED for yours to run?',
+			default=False
+		).execute()
+
+		if confirm:
+			neededSkills = self.askRequirementsName()
 
 		conflictingSkills = list()
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'conflictingSkills',
-					'message': 'Are there any skills that are CONFLICTING with yours?' if not conflictingSkills else 'Any other?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'conflictSkills',
-					'message' : 'Enter the skill name or `stop` to cancel',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['conflictingSkills']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['conflictingSkills'] or subAnswers['conflictSkills'] == 'stop':
-				break
-			conflictingSkills.append(subAnswers['conflictSkills'])
+		confirm = inquirer.confirm(
+			message='Are there any skills that are CONFLICTING for yours to run?',
+			default=False
+		).execute()
+
+		if confirm:
+			conflictingSkills = self.askRequirementsName()
 
 		conditions = dict()
 		conditions['lang'] = self._general['langs']
-		if answers['isOnline']:
-			conditions['online'] = answers['isOnline']
+		if isOnline:
+			conditions['online'] = True
 
-		if answers['arbitraryCapture']:
-			conditions['asrArbitraryCapture'] = answers['arbitraryCapture']
+		if arbitraryCapture:
+			conditions['asrArbitraryCapture'] = arbitraryCapture
 
 		if neededSkills:
 			conditions['skill'] = neededSkills
@@ -370,9 +368,9 @@ class SkillCreator:
 			'author'            : self._general['username'],
 			'maintainers'       : [],
 			'desc'              : self._general['description'],
-			'aliceMinVersion'   : '1.0.0-b3',
+			'aliceMinVersion'   : '1.0.0-rc2',
 			'pipRequirements'   : reqs,
-			'systemRequirements': sysreqs,
+			'systemRequirements': sysReqs,
 			'conditions'        : conditions
 		}
 
@@ -482,27 +480,14 @@ class SkillCreator:
 
 
 	def createDevices(self) -> bool:
-		skillDevices = []
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'devices',
-					'message': 'Are you planning on creating devices for your skill?' if not skillDevices else 'Any other devices?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'device',
-					'message' : 'Enter the name of the device',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['devices']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['devices'] or subAnswers['device'] == 'stop':
-				break
-			skillDevices.append(subAnswers['device'])
+		skillDevices = list()
+		confirm = inquirer.confirm(
+			message='Are you planning on creating a device for your skill?',
+			default=False
+		).execute()
+
+		if confirm:
+			skillDevices = [toPascalCase(name) for name in self.askRequirementsName()]
 
 		if not skillDevices:
 			return False
@@ -534,27 +519,14 @@ class SkillCreator:
 
 
 	def createWidgets(self) -> bool:
-		skillWidgets = []
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'widgets',
-					'message': 'Are you planning on creating widgets for your skill? Widgets are used on the\ninterface to display quick informations that your skill can return' if not skillWidgets else 'Any other widgets?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'widget',
-					'message' : 'Enter the name of the widget',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['widgets']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['widgets'] or subAnswers['widget'] == 'stop':
-				break
-			skillWidgets.append(subAnswers['widget'])
+		skillWidgets = list()
+		confirm = inquirer.confirm(
+			message='Are you planning on creating widgets for your skill? Widgets are used on the\ninterface to display quick information that your skill can return.',
+			default=False
+		).execute()
+
+		if confirm:
+			skillWidgets = [toPascalCase(name) for name in self.askRequirementsName()]
 
 		if not skillWidgets:
 			return False
@@ -593,28 +565,14 @@ class SkillCreator:
 
 
 	def createScenarioNodes(self) -> bool:
-		skillNodes = []
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'nodes',
-					'message': 'Are you planning on creating scenario nodes? Scenario nodes are used on the\ninterface for users to create interactions between skills!' if not skillNodes else 'Any other node?',
-					'default': False
-				},
-				{
-					'type'    : 'input',
-					'name'    : 'node',
-					'message' : 'Enter the name of the node',
-					'validate': NotEmpty,
-					'filter'  : lambda val: str(val)[0].lower() + str(val).title().replace(' ', '')[1:],
-					'when'    : lambda subAnswers: subAnswers['nodes']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['nodes'] or subAnswers['node'] == 'stop':
-				break
-			skillNodes.append(subAnswers['node'])
+		skillNodes = list()
+		confirm = inquirer.confirm(
+			message='Are you planning on creating scenario nodes? Scenario nodes are used on the\ninterface for users to create interactions between skills!',
+			default=False
+		).execute()
+
+		if confirm:
+			skillNodes = [toPascalCase(name) for name in self.askRequirementsName()]
 
 		if not skillNodes:
 			return False
@@ -636,37 +594,26 @@ class SkillCreator:
 			self.createTemplateFile(f'scenarioNodes/{nodeName}.html', 'nodes/node.html.j2', nodeName=nodeName, skillName=self._general['skillName'])
 
 			for lang in self._general['langs']:
-				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.json', 'nodes/locales.json.j2',
-										nodeName=nodeName)
+				self.createTemplateFile(f'scenarioNodes/locales/{lang}/{nodeName}.json', 'nodes/locales.json.j2', nodeName=nodeName)
 		return True
 
 
 	def uploadGithub(self) -> bool:
-		while True:
-			questions = [
-				{
-					'type'   : 'confirm',
-					'name'   : 'uploadToGithub',
-					'message': 'The Skill Kit can upload your skill to Github. You need\n a Github account for that. Do you wish to upload your skill?',
-					'default': False
-				},
-				{
-					'type'    : 'password',
-					'name'    : 'githubToken',
-					'message' : 'Please enter your Github TOKEN (not password!)',
-					'validate': NotEmpty,
-					'when'    : lambda subAnswers: subAnswers['uploadToGithub']
-				}
-			]
-			subAnswers = prompt(questions)
-			if not subAnswers['uploadToGithub'] or subAnswers['githubToken']:
-				break
+		confirm = inquirer.confirm(
+			message='The Skill Kit can upload your skill to GitHub. You need\n a GitHub account for that. Do you wish to upload your skill?',
+			default=False
+		).execute()
 
-		if subAnswers['uploadToGithub']:
+		if confirm:
+			githubToken = inquirer.secret(
+				message='Please enter your GitHub TOKEN (not password!)',
+				validate=EmptyInputValidator('Token is required')
+			).execute()
+
 			result = uploadSkillToGithub(
-				githubToken=subAnswers['githubToken'],
+				githubToken=githubToken,
 				skillAuthor=self._general['username'],
-				skillName=self._general["skillName"],
+				skillName=self._general['skillName'],
 				skillPath=self._skillPath,
 				skillDesc=self._general['description']
 			)
@@ -676,106 +623,6 @@ class SkillCreator:
 			else:
 				print('\nYour skill was uploaded to your Github account!')
 				return True
-
-
-# STYLE = style_from_dict({
-# 	Token.QuestionMark: '#996633 bold',
-# 	Token.Selected    : '#5F819D bold',
-# 	Token.Instruction : '#99ff33 bold', #NOSONAR
-# 	Token.Pointer     : '#673ab7 bold',
-# 	Token.Answer      : '#0066ff bold',
-# 	Token.Question    : '#99ff33 bold',
-# 	Token.Input       : '#99ff33 bold'
-# })
-
-class NotEmpty(Validator):
-
-	def validate(self, document):
-		if not document.text:
-			raise ValidationError(
-				message='This cannot be empty',
-				cursor_position=len(document.text)
-			)
-
-
-FIRST_QUESTION = [
-	{
-		'type'    : 'input',
-		'name'    : 'username',
-		'message' : 'Please enter your Github user name',
-		'validate': NotEmpty,
-		'filter'  : lambda val: str(val).replace(' ', '')
-	},
-	{
-		'type'    : 'input',
-		'name'    : 'skillName',
-		'message' : 'Please enter the name of the skill you are creating',
-		'validate': NotEmpty,
-		'filter'  : lambda val: ''.join(x.capitalize() for x in val.split(' '))
-	}
-]
-
-NEXT_QUESTION = [
-	{
-		'type'    : 'input',
-		'name'    : 'speakableName',
-		'message' : 'Please enter the name of the skill in a form that can be spoken',
-		'validate': NotEmpty
-	},
-	{
-		'type'    : 'input',
-		'name'    : 'description',
-		'message' : 'Please enter a description for this skill',
-		'validate': NotEmpty,
-		'filter'  : lambda val: str(val).capitalize()
-	},
-	{
-		'type'   : 'list',
-		'name'   : 'category',
-		'message': 'Please select in which category your skill belongs',
-		'choices': ['weather', 'information', 'entertainment', 'music', 'game', 'kid', 'automation', 'assistance', 'security', 'planning', 'shopping', 'organisation', 'household', 'health'],
-		'filter' : lambda val: val.lower()
-	},
-	{
-		'type'    : 'checkbox',
-		'name'    : 'langs',
-		'message' : 'Choose the language for this skill. Note that to share\nyour skill on the official repo english is mandatory',
-		'validate': NotEmpty,
-		'choices' : [
-			{
-				'name'   : 'en',
-				'checked': True
-			},
-			{
-				'name': 'fr'
-			},
-			{
-				'name': 'de'
-			},
-			{
-				'name': 'it'
-			},
-			{
-				'name': 'pl'
-			},
-			{
-				'name': 'es'
-			},
-			{
-				'name': 'jp'
-			},
-			{
-				'name': 'kr'
-			},
-		]
-	},
-	{
-		'type'   : 'confirm',
-		'name'   : 'createInstructions',
-		'message': 'Would you like to create instructions for your skill?\nInstructions display on the interface and let users know how to use your skill.',
-		'default': False
-	}
-]
 
 
 def toPascalCase(theString: str, replaceSepCharacters: bool = False, sepCharacters: tuple = None) -> str:
