@@ -58,7 +58,7 @@
 			"title": "Skill icon",
 			"default": "",
 			"examples": [
-				"fab fa-battle-net"
+				"fas fa-user-alien"
 			],
 			"pattern": "^fa[a-zA-Z0-9 -]+$"
 		},

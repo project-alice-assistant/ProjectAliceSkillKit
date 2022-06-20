@@ -19,19 +19,19 @@
 
 from __future__ import print_function, unicode_literals
 
-import click
-import jinja2
 import json
 import os
 import shutil
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
-from InquirerPy.validator import EmptyInputValidator
 from pathlib import Path
 from typing import Union
 
+import click
+import jinja2
 from AliceGit.Git import Repository
 from AliceGit.Github import Github
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from InquirerPy.validator import EmptyInputValidator
 
 
 class SkillCreationFailed(Exception):
@@ -363,7 +363,7 @@ class SkillCreator(object):
 			'name'              : self._general['skillName'],
 			'speakableName'     : self._general['speakableName'],
 			'version'           : '0.0.1',
-			'icon'              : 'fab fa-battle-net',
+			'icon'              : 'fas fa-user-alien',
 			'category'          : self._general['category'],
 			'author'            : self._general['username'],
 			'maintainers'       : [],
