@@ -459,11 +459,6 @@ class SkillCreator(object):
 			templateFile='tests.yml.j2'
 		)
 
-		self.createTemplateFile(
-			outputPath=Path(self._skillPath, '.github/PULL_REQUEST_TEMPLATE.md'),
-			templateFile='PULL_REQUEST_TEMPLATE.md'
-		)
-
 
 	def createInstructions(self) -> bool:
 		if not self._general['createInstructions']:
