@@ -444,6 +444,11 @@ class SkillCreator(object):
 		)
 
 		self.createTemplateFile(
+			outputPath=self._skillPath / 'mypy_requirements.txt',
+			templateFile='requirements.txt'
+		)
+
+		self.createTemplateFile(
 			outputPath=self._skillPath / 'sonar-project.properties',
 			templateFile='sonar-project.properties.j2',
 			skillName=self._general['skillName']
