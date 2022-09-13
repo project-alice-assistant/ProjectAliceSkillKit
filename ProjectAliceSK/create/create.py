@@ -445,7 +445,7 @@ class SkillCreator(object):
 
 		self.createTemplateFile(
 			outputPath=self._skillPath / 'mypy_requirements.txt',
-			templateFile='requirements.txt'
+			templateFile='mypy_requirements.txt'
 		)
 
 		self.createTemplateFile(

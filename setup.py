@@ -28,7 +28,7 @@ with io.open('README.md', 'rt', encoding="utf8") as f:
 setup(
 	name='projectalice-sk',
 	author='ProjectAlice',
-	version='2.3.3',
+	version='2.3.4',
 	maintainer='Psychokiller1888',
 	maintainer_email='laurentchervet@bluewin.ch',
 	description='Project Alice skill kit',
